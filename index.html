@@ -12,28 +12,27 @@
         button { background: var(--dark-pink); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 15px; }
         
         /* Nonogram Styles */
-        .grid { display: grid; grid-template-columns: repeat(5, 40px); gap: 2px; justify-content: center; margin: 10px auto; }
-        .cell { width: 40px; height: 40px; border: 1px solid #ddd; background: #fafafa; cursor: pointer; }
+        .grid { display: grid; grid-template-columns: repeat(7, 35px); gap: 2px; justify-content: center; margin: 10px auto; }
+        .cell { width: 35px; height: 35px; border: 1px solid #eee; background: #fdfdfd; cursor: pointer; border-radius: 4px; }
         .cell.filled { background: var(--dark-pink); }
-        .hint-row { display: flex; justify-content: center; gap: 32px; font-weight: bold; margin-bottom: 5px; }
+        .hint-row { display: flex; justify-content: center; gap: 15px; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: #888; }
 
         /* Dino Game Styles */
-        #gameCanvas { background: #f7f7f7; border-bottom: 2px solid #333; display: block; margin: 0 auto; }
+        #gameCanvas { background: #fff; border-bottom: 2px solid #333; display: block; margin: 0 auto; border-radius: 10px; }
 
         /* Quiz Styles */
-        .option { display: block; width: 100%; padding: 10px; margin: 5px 0; border: 2px solid var(--pink); border-radius: 10px; cursor: pointer; background: white; transition: 0.3s; }
+        .option { display: block; width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var(--pink); border-radius: 12px; cursor: pointer; background: white; transition: 0.3s; font-size: 16px; }
         .correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724; }
         .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
-        .note { font-style: italic; color: var(--dark-pink); margin-top: 10px; font-weight: bold; animation: fadeIn 0.5s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .note { font-style: italic; color: var(--dark-pink); margin-top: 15px; font-weight: bold; font-size: 18px; }
     </style>
 </head>
 <body>
 
     <div id="stage1" class="game-card">
         <h2>Level 1: Fill the Pattern</h2>
-        <p>Click the squares to reveal a shape!</p>
-        <div class="hint-row"><span>1 1</span> <span>2 2</span> <span>2 2</span> <span>2 2</span> <span>1 1</span></div>
+        <p>Complete the shape to move forward!</p>
+        <div class="hint-row"><span>1 1</span> <span>3 3</span> <span>7</span> <span>7</span> <span>7</span> <span>3 3</span> <span>1 1</span></div>
         <div class="grid" id="nonogram"></div>
         <button onclick="checkNonogram()">Check Pattern</button>
     </div>
@@ -76,17 +75,27 @@
 
     <div id="finalStage" class="game-card hidden">
         <h1 style="color: var(--dark-pink);">❤️ To My Favorite Person ❤️</h1>
-        <p id="confessionText" style="white-space: pre-wrap; line-height: 1.6;">
-            [TYPE YOUR FINAL CONFESSION HERE!]
-            I've wanted to tell you this for a long time...
+        <p id="confessionText" style="white-space: pre-wrap; line-height: 1.6; font-size: 1.2em;">
+            Dear [Name],
+
+            I've been holding onto this for a while, but I wanted to tell you...
+            [that I like you. I'm doing this now because we're about to finish matriculation and will probably never see each other again so I wanted to take my chances.]
         </p>
     </div>
 
     <script>
-        // --- NONOGRAM LOGIC ---
-        const solution = [0,1,0,1,0, 1,1,1,1,1, 1,1,1,1,1, 0,1,1,1,0]; // Heart Shape 5x4
+        // --- 7x7 SLIM HEART SOLUTION ---
+        const solution = [
+            0,1,1,0,1,1,0,
+            1,1,1,1,1,1,1,
+            1,1,1,1,1,1,1,
+            1,1,1,1,1,1,1,
+            0,1,1,1,1,1,0,
+            0,0,1,1,1,0,0,
+            0,0,0,1,0,0,0
+        ]; 
         const nogo = document.getElementById('nonogram');
-        for(let i=0; i<20; i++) {
+        for(let i=0; i<49; i++) {
             let cell = document.createElement('div');
             cell.classList.add('cell');
             cell.onclick = () => cell.classList.toggle('filled');
@@ -101,11 +110,11 @@
                 if(solution[i] === 0 && c.classList.contains('filled')) correct = false;
             });
             if(correct) {
-                alert("Heart revealed! Next level...");
+                alert("Perfect heart! Next level...");
                 document.getElementById('stage1').classList.add('hidden');
                 document.getElementById('stage2').classList.remove('hidden');
                 startDino();
-            } else { alert("Not quite! Try again."); }
+            } else { alert("The heart isn't quite right yet. Try again!"); }
         }
 
         // --- DINO GAME LOGIC ---
@@ -116,9 +125,12 @@
             let player = { x: 20, y: 120, w: 20, h: 20, dy: 0, jump: -8, grounded: false };
             let obstacles = [];
             let frame = 0;
+            let gameActive = true;
 
             function update() {
+                if(!gameActive) return;
                 if(score >= 10) {
+                    gameActive = false;
                     document.getElementById('stage2').classList.add('hidden');
                     document.getElementById('stage3').classList.remove('hidden');
                     return;
@@ -126,21 +138,18 @@
                 frame++;
                 ctx.clearRect(0,0,300,150);
                 
-                // Player Logic
-                player.dy += 0.5; // gravity
+                player.dy += 0.5;
                 player.y += player.dy;
                 if(player.y > 120) { player.y = 120; player.dy = 0; player.grounded = true; }
                 ctx.fillStyle = "#ff69b4";
                 ctx.fillRect(player.x, player.y, player.w, player.h);
 
-                // Obstacle Logic
-                if(frame % 80 === 0) obstacles.push({ x: 300, y: 120, w: 15, h: 20 });
+                if(frame % 90 === 0) obstacles.push({ x: 300, y: 125, w: 15, h: 15 });
                 obstacles.forEach((o, i) => {
-                    o.x -= 3;
+                    o.x -= 3.5;
                     ctx.fillStyle = "#333";
                     ctx.fillRect(o.x, o.y, o.w, o.h);
                     if(o.x < -20) { obstacles.splice(i, 1); score++; document.getElementById('score').innerText = score; }
-                    // Collision
                     if(player.x < o.x + o.w && player.x + player.w > o.x && player.y < o.y + o.h && player.y + player.h > o.y) {
                         score = 0; obstacles = []; document.getElementById('score').innerText = 0;
                     }
@@ -162,21 +171,17 @@
                 alert("Wrong! I remember it perfectly...");
             }
         }
-
         function answerQ2() {
             document.querySelectorAll('.q2-opt').forEach(b => b.classList.add('correct'));
             document.getElementById('note2').classList.remove('hidden');
             document.getElementById('next2').classList.remove('hidden');
         }
-
         function showQ3() { document.getElementById('q2').classList.add('hidden'); document.getElementById('q3').classList.remove('hidden'); }
-
         function answerQ3() {
             document.querySelectorAll('.q3-opt').forEach(b => b.classList.add('wrong'));
             document.getElementById('note3').classList.remove('hidden');
             document.getElementById('finalBtn').classList.remove('hidden');
         }
-
         function revealConfession() {
             document.getElementById('stage3').classList.add('hidden');
             document.getElementById('finalStage').classList.remove('hidden');
