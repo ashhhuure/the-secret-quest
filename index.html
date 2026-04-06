@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>A Special Message</title>
+</head>
+<body>
+    <h1>Welcome to the Challenge!</h1>
+    <p>Complete the mini-games to unlock the secret.</p>
+    
+    <div id="game-container"></div>
+
+    <input type="text" id="passwordInput" placeholder="Enter Password">
+    <button onclick="checkPassword()">Unlock</button>
+
+    <script>
+        function checkPassword() {
+            const pw = document.getElementById('passwordInput').value;
+            if(pw === "YOUR_WINNING_PASSWORD") {
+                alert("Success! Your message is: [Your Confession Here]");
+            } else {
+                alert("Wrong password! Try the games again.");
+            }
+        }
+    </script>
+</body>
+</html>
