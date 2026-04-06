@@ -31,4 +31,178 @@
         .quiz-container { text-align: left; max-width: 500px; margin: 0 auto; }
         .option { display: block; width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ccc; border-radius: 12px; cursor: pointer; background: white; transition: 0.3s; font-size: 16px; text-align: left; }
         .correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724; }
-        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24
+        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
+        .note { font-style: italic; color: var(--red); margin-top: 15px; font-weight: bold; font-size: 18px; text-align: center; background: rgba(231, 76, 60, 0.1); padding: 10px; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div id="stage1" class="game-card">
+        <h2 style="color: var(--text);">Level 1: The Heart Key</h2>
+        <p>Use the clues to fill the grid and reveal the shape.</p>
+        
+        <div class="nonogram-container">
+            <div class="hint-row-fix">
+                <div class="row-hint">1</div>
+                <div class="row-hint">1<br>3</div>
+                <div class="row-hint">3</div>
+                <div class="row-hint">3</div>
+                <div class="row-hint">2</div>
+            </div>
+
+            <div class="grid" id="nonogram">
+                <div class="hint-col-fix">
+                    <div class="col-hint">4</div>
+                    <div class="col-hint">3</div>
+                    <div class="col-hint">3</div>
+                    <div class="col-hint">1</div>
+                    <div class="col-hint">2</div>
+                </div>
+                </div>
+        </div>
+
+        <div>
+            <button onclick="checkNonogram()">Verify Shape</button>
+        </div>
+    </div>
+
+    <div id="stage2" class="game-card hidden">
+        <h2 style="color: var(--text);">Level 2: Beat the Obstacles</h2>
+        <p>Jump over 10 hurdles to power up! (Tap or Spacebar)</p>
+        <canvas id="gameCanvas" width="300" height="150"></canvas>
+        <p>Power Level: <span id="score">0</span> / 10</p>
+    </div>
+
+    <div id="stage3" class="game-card hidden">
+        <h2 style="color: var(--text);">Level 3: The Truth Test</h2>
+        <div class="quiz-container">
+            <div id="q1">
+                <p>1. Which shirt did you wear that made me have heart palpitations?</p>
+                <button class="option" onclick="answerQ1(this, true)">A. white buttoned up</button>
+                <button class="option" onclick="answerQ1(this, false)">B. blue college shirt</button>
+                <button class="option" onclick="answerQ1(this, false)">C. your white class shirt</button>
+            </div>
+
+            <div id="q2" class="hidden">
+                <p>2. Which part of you do I like the most?</p>
+                <button class="option q2-opt" onclick="answerQ2()">A. your eyes</button>
+                <button class="option q2-opt" onclick="answerQ2()">B. your smile</button>
+                <button class="option q2-opt" onclick="answerQ2()">C. your shoulders</button>
+                <div id="note2" class="note hidden">"I like everything about you >/////<"</div>
+                <button id="next2" class="hidden" onclick="showQ3()">Next Question</button>
+            </div>
+
+            <div id="q3" class="hidden">
+                <p>3. What's my name?</p>
+                <button class="option q3-opt" onclick="answerQ3()">A. Chaya</button>
+                <button class="option q3-opt" onclick="answerQ3()">B. Cahaya</button>
+                <button class="option q3-opt" onclick="answerQ3()">C. Cahya</button>
+                <div id="note3" class="note hidden">"Who cares what my name is, I want to be called yours."</div>
+                <button id="finalBtn" class="hidden" onclick="revealConfession()">Unlock Secret Message</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="finalStage" class="game-card hidden" style="border: 2px solid var(--red);">
+        <h1 style="color: var(--red);">❤️ To My Favorite Person ❤️</h1>
+        <p id="confessionText" style="white-space: pre-wrap; line-height: 1.8; font-size: 1.3em; text-align: left; padding: 20px;">
+Dear [Name],
+
+I've been holding onto this for a while, but I wanted to tell you...
+[Type the rest of your confession here! This area is safe for your text.]
+        </p>
+    </div>
+
+    <script>
+        // --- NONOGRAM LOGIC (Solution updated to match your provided image, but red) ---
+        // 1=filled(red), 0=empty
+        const solution = [
+            0,1,1,1,1, // 4
+            0,0,1,1,1, // 3
+            0,1,1,1,0, // 3
+            0,1,0,0,0, // 1
+            1,1,0,0,0  // 2
+        ]; 
+
+        const nogo = document.getElementById('nonogram');
+        for(let i=0; i<25; i++) {
+            let cell = document.createElement('div');
+            cell.classList.add('cell');
+            cell.onclick = () => cell.classList.toggle('filled');
+            nogo.appendChild(cell);
+        }
+
+        function checkNonogram() {
+            const cells = document.querySelectorAll('#nonogram .cell');
+            let correct = true;
+            cells.forEach((c, i) => {
+                if(solution[i] === 1 && !c.classList.contains('filled')) correct = false;
+                if(solution[i] === 0 && c.classList.contains('filled')) correct = false;
+            });
+            if(correct) {
+                alert("Heart key recognized! Next level...");
+                document.getElementById('stage1').classList.add('hidden');
+                document.getElementById('stage2').classList.remove('hidden');
+                startDino();
+            } else { alert("Not quite right. Double check the clues! (Or the cheat sheet... 😉)"); }
+        }
+
+        // --- DINO GAME LOGIC ---
+        function startDino() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            let score = 0;
+            let player = { x: 20, y: 120, w: 20, h: 20, dy: 0, jump: -8, grounded: false };
+            let obstacles = [];
+            let frame = 0;
+            let gameActive = true;
+
+            function update() {
+                if(!gameActive) return;
+                if(score >= 10) { gameActive = false; document.getElementById('stage2').classList.add('hidden'); document.getElementById('stage3').classList.remove('hidden'); return; }
+                frame++;
+                ctx.clearRect(0,0,300,150);
+                
+                player.dy += 0.5;
+                player.y += player.dy;
+                if(player.y > 120) { player.y = 120; player.dy = 0; player.grounded = true; }
+                ctx.fillStyle = "#e74c3c"; // Red player
+                ctx.fillRect(player.x, player.y, player.w, player.h);
+
+                if(frame % 90 === 0) obstacles.push({ x: 300, y: 125, w: 15, h: 15 });
+                obstacles.forEach((o, i) => {
+                    o.x -= 3.5;
+                    ctx.fillStyle = "#000"; // Black obstacles
+                    ctx.fillRect(o.x, o.y, o.w, o.h);
+                    if(o.x < -20) { obstacles.splice(i, 1); score++; document.getElementById('score').innerText = score; }
+                    if(player.x < o.x + o.w && player.x + player.w > o.x && player.y < o.y + o.h && player.y + player.h > o.y) {
+                        score = 0; obstacles = []; document.getElementById('score').innerText = 0;
+                    }
+                });
+                requestAnimationFrame(update);
+            }
+            window.addEventListener('keydown', (e) => { if(e.code === 'Space' && player.grounded){ player.dy = player.jump; player.grounded = false; }});
+            canvas.onclick = () => { if(player.grounded){ player.dy = player.jump; player.grounded = false; }};
+            update();
+        }
+
+        // --- QUIZ LOGIC ---
+        function answerQ1(btn, isCorrect) {
+            if(isCorrect) { btn.classList.add('correct'); setTimeout(() => { document.getElementById('q1').classList.add('hidden'); document.getElementById('q2').classList.remove('hidden'); }, 1000); }
+            else { btn.classList.add('wrong'); alert("Wrong! I remember it perfectly..."); }
+        }
+        function answerQ2() {
+            document.querySelectorAll('.q2-opt').forEach(b => b.classList.add('correct'));
+            document.getElementById('note2').classList.remove('hidden');
+            document.getElementById('next2').classList.remove('hidden');
+        }
+        function showQ3() { document.getElementById('q2').classList.add('hidden'); document.getElementById('q3').classList.remove('hidden'); }
+        function answerQ3() {
+            document.querySelectorAll('.q3-opt').forEach(b => b.classList.add('wrong'));
+            document.getElementById('note3').classList.remove('hidden');
+            document.getElementById('finalBtn').classList.remove('hidden');
+        }
+        function revealConfession() { document.getElementById('stage3').classList.add('hidden'); document.getElementById('finalStage').classList.remove('hidden'); }
+    </script>
+</body>
+</html>
