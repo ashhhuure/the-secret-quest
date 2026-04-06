@@ -11,107 +11,56 @@
         .hidden { display: none; }
         
         /* --- AUTHENTIC NONOGRAM LAYOUT --- */
-        .nonogram-wrapper { display: inline-grid; grid-template-columns: 50px 250px; grid-template-rows: 80px 250px; margin-top: 20px; }
+        .nonogram-wrapper { display: inline-grid; grid-template-columns: 60px 200px; grid-template-rows: 60px 200px; margin-top: 20px; justify-content: center;}
+        .empty-corner { border-bottom: 2px solid black; border-right: 2px solid black; }
         
-        .empty-corner { border-bottom: 3px solid black; border-right: 3px solid black; }
-        
-        .top-hints { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 3px solid black; border-right: 3px solid black; border-bottom: 3px solid black; background: #fff; }
-        .top-hint-cell { border-left: 1px solid black; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px; font-weight: bold; font-size: 14px; line-height: 1.2; }
+        .top-hints { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 2px solid black; border-right: 2px solid black; border-bottom: 2px solid black; background: #fff; }
+        .top-hint-cell { border-left: 1px solid black; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 5px; font-weight: bold; font-size: 14px; line-height: 1.1; }
 
-        .side-hints { display: grid; grid-template-rows: repeat(5, 1fr); border-left: 3px solid black; border-bottom: 3px solid black; border-right: 3px solid black; background: #fff; }
-        .side-hint-cell { border-top: 1px solid black; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-weight: bold; font-size: 16px; }
+        .side-hints { display: grid; grid-template-rows: repeat(5, 1fr); border-left: 2px solid black; border-bottom: 2px solid black; border-right: 2px solid black; background: #fff; }
+        .side-hint-cell { border-top: 1px solid black; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-weight: bold; font-size: 14px; }
 
-        .main-grid { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); border-right: 3px solid black; border-bottom: 3px solid black; }
+        .main-grid { display: grid; grid-template-columns: repeat(5, 1fr); grid-template-rows: repeat(5, 1fr); border-right: 2px solid black; border-bottom: 2px solid black; }
         .cell { background: white; border-right: 1px solid black; border-bottom: 1px solid black; cursor: pointer; box-sizing: border-box; }
         .cell.filled { background: var(--red) !important; }
 
-        /* --- DINO & QUIZ --- */
-        #gameCanvas { background: #fff; border-bottom: 2px solid black; display: block; margin: 0 auto; width: 100%; max-width: 300px; border-radius: 5px; touch-action: none; }
-        .option { display: block; width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ffccd5; border-radius: 12px; background: white; font-size: 16px; text-align: left; cursor: pointer; }
-        .correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724; font-weight: bold; }
-        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
-        .note { color: var(--red); font-weight: bold; margin-top: 10px; padding: 10px; background: #fff5f5; border-radius: 10px; border: 1px dashed var(--red); }
-        .btn-main { background: var(--red); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 15px; cursor: pointer; }
+        .btn-main { background: var(--red); color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; font-weight: bold; margin-top: 25px; cursor: pointer; font-size: 1.1em; }
     </style>
 </head>
 <body>
 
     <div id="stage1" class="game-card">
         <h2>Level 1: The Heart Key</h2>
-        <p>Fill the grid based on the numbers!</p>
+        <p>Fill the grid to reveal the secret shape!</p>
         
         <div class="nonogram-wrapper">
             <div class="empty-corner"></div>
             <div class="top-hints">
-                <div class="top-hint-cell">1<br>1</div>
-                <div class="top-hint-cell">2<br>2</div>
-                <div class="top-hint-cell">5</div>
-                <div class="top-hint-cell">2<br>2</div>
-                <div class="top-hint-cell">1<br>1</div>
-            </div>
+                <div class="top-hint-cell">1<br>1</div> <div class="top-hint-cell">4</div>   <div class="top-hint-cell">2<br>1</div> <div class="top-hint-cell">4</div>   <div class="top-hint-cell">1<br>1</div> </div>
             <div class="side-hints">
-                <div class="side-hint-cell">2 2</div>
-                <div class="side-hint-cell">5</div>
-                <div class="side-hint-cell">5</div>
-                <div class="side-hint-cell">3</div>
-                <div class="side-hint-cell">1</div>
-            </div>
+                <div class="side-hint-cell">1 1</div> <div class="side-hint-cell">5</div>   <div class="side-hint-cell">5</div>   <div class="side-hint-cell">3</div>   <div class="side-hint-cell">1</div>   </div>
             <div class="main-grid" id="nogoGrid"></div>
         </div>
         
         <button class="btn-main" onclick="checkNogo()">Unlock Level 2</button>
     </div>
 
-    <div id="stage2" class="game-card hidden">
-        <h2>Level 2: Heart Runner</h2>
-        <p>Tap screen to jump! (Goal: 7)</p>
-        <canvas id="gameCanvas" width="300" height="150"></canvas>
-        <h3 id="dinoScore">Score: 0 / 7</h3>
-    </div>
-
-    <div id="stage3" class="game-card hidden">
-        <h2>Level 3: The Final Test</h2>
-        <div id="q1">
-            <p>1. Which shirt did you wear that made me have heart palpitations?</p>
-            <button class="option" onclick="ansQ1(this, true)">A. white buttoned up</button>
-            <button class="option" onclick="ansQ1(this, false)">B. blue college shirt</button>
-            <button class="option" onclick="ansQ1(this, false)">C. your white class shirt</button>
-        </div>
-        <div id="q2" class="hidden">
-            <p>2. Which part of you do I like the most?</p>
-            <button class="option q2o" onclick="ansQ2()">A. your eyes</button>
-            <button class="option q2o" onclick="ansQ2()">B. your smile</button>
-            <button class="option q2o" onclick="ansQ2()">C. your shoulders</button>
-            <div id="n2" class="note hidden">"I like everything about you >/////<"</div>
-            <button class="btn-main" onclick="showQ3()">Next</button>
-        </div>
-        <div id="q3" class="hidden">
-            <p>3. What's my name?</p>
-            <button class="option q3o" onclick="ansQ3()">A. Chaya</button>
-            <button class="option q3o" onclick="ansQ3()">B. Cahaya</button>
-            <button class="option q3o" onclick="ansQ3()">C. Cahya</button>
-            <div id="n3" class="note hidden">"Who cares what my name is, I want to be called yours."</div>
-            <button class="btn-main" onclick="revealConfession()">Unlock Message</button>
-        </div>
-    </div>
-
-    <div id="final" class="game-card hidden" style="border: 3px solid var(--red);">
-        <h1 style="color: var(--red);">❤️ For You ❤️</h1>
-        <p id="confText" style="white-space: pre-wrap; text-align: left; line-height: 1.6;">
-Dear [Name],
-
-[Type your confession message here!]
-        </p>
-    </div>
-
     <script>
-        // HEART SOLUTION (5x5)
-        // . X . X . (0,1,0,1,0)
-        // X X X X X (1,1,1,1,1)
-        // X X X X X (1,1,1,1,1)
-        // . X X X . (0,1,1,1,0)
-        // . . X . . (0,0,1,0,0)
-        const sol = [0,1,0,1,0, 1,1,1,1,1, 1,1,1,1,1, 0,1,1,1,0, 0,0,1,0,0];
+        // CORRECT HEART SOLUTION (5x5)
+        // [0, 1, 0, 1, 0]  <- Row 1 (Hints: 1 1)
+        // [1, 1, 1, 1, 1]  <- Row 2 (Hints: 5)
+        // [1, 1, 1, 1, 1]  <- Row 3 (Hints: 5)
+        // [0, 1, 1, 1, 0]  <- Row 4 (Hints: 3)
+        // [0, 0, 1, 0, 0]  <- Row 5 (Hints: 1)
+        
+        const sol = [
+            0, 1, 0, 1, 0, 
+            1, 1, 1, 1, 1, 
+            1, 1, 1, 1, 1, 
+            0, 1, 1, 1, 0, 
+            0, 0, 1, 0, 0
+        ];
+
         const grid = document.getElementById('nogoGrid');
         for(let i=0; i<25; i++) {
             let c = document.createElement('div');
@@ -123,41 +72,16 @@ Dear [Name],
         function checkNogo() {
             const cells = document.querySelectorAll('.cell');
             let win = true;
-            cells.forEach((c, i) => { if((sol[i]===1 && !c.classList.contains('filled')) || (sol[i]===0 && c.classList.contains('filled'))) win = false; });
-            if(win) { document.getElementById('stage1').classList.add('hidden'); document.getElementById('stage2').classList.remove('hidden'); startDino(); }
-            else alert("The shape isn't quite right yet! Hint: It's a heart ❤️");
-        }
-
-        function startDino() {
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            let score = 0;
-            let p = { x: 20, y: 120, w: 20, h: 20, dy: 0, jump: -9, grounded: false };
-            let obs = []; let frame = 0;
-            function draw() {
-                if(score >= 7) { document.getElementById('stage2').classList.add('hidden'); document.getElementById('stage3').classList.remove('hidden'); return; }
-                frame++; ctx.clearRect(0,0,300,150);
-                p.dy += 0.6; p.y += p.dy;
-                if(p.y > 120) { p.y = 120; p.dy = 0; p.grounded = true; }
-                ctx.fillStyle = "#e74c3c"; ctx.fillRect(p.x, p.y, p.w, p.h);
-                if(frame % 100 === 0) obs.push({ x: 300, y: 125, w: 15, h: 15 });
-                obs.forEach((o, i) => {
-                    o.x -= 3; ctx.fillStyle = "#333"; ctx.fillRect(o.x, o.y, o.w, o.h);
-                    if(o.x < -20) { obs.splice(i, 1); score++; document.getElementById('dinoScore').innerText = `Score: ${score} / 7`; }
-                    if(p.x < o.x + o.w && p.x + p.w > o.x && p.y < o.y + o.h && p.y + p.h > o.y) { score = 0; obs = []; document.getElementById('dinoScore').innerText = `Score: 0 / 7`; }
-                });
-                requestAnimationFrame(draw);
+            cells.forEach((c, i) => { 
+                if((sol[i]===1 && !c.classList.contains('filled')) || (sol[i]===0 && c.classList.contains('filled'))) win = false; 
+            });
+            if(win) { 
+                alert("Correct! Heart recognized.");
+                // Transition logic to Stage 2...
+            } else {
+                alert("The shape isn't quite right yet! Hint: It's a heart ❤️");
             }
-            canvas.addEventListener('touchstart', (e) => { e.preventDefault(); if(p.grounded){ p.dy = p.jump; p.grounded = false; }});
-            window.addEventListener('keydown', (e) => { if(e.code === 'Space' && p.grounded){ p.dy = p.jump; p.grounded = false; }});
-            draw();
         }
-
-        function ansQ1(btn, correct) { if(correct) { btn.classList.add('correct'); setTimeout(() => { document.getElementById('q1').classList.add('hidden'); document.getElementById('q2').classList.remove('hidden'); }, 800); } else btn.classList.add('wrong'); }
-        function ansQ2() { document.querySelectorAll('.q2o').forEach(b => b.classList.add('correct')); document.getElementById('n2').classList.remove('hidden'); }
-        function showQ3() { document.getElementById('q2').classList.add('hidden'); document.getElementById('q3').classList.remove('hidden'); }
-        function ansQ3() { document.querySelectorAll('.q3o').forEach(b => b.classList.add('wrong')); document.getElementById('n3').classList.remove('hidden'); }
-        function revealConfession() { document.getElementById('stage3').classList.add('hidden'); document.getElementById('final').classList.remove('hidden'); }
     </script>
 </body>
 </html>
