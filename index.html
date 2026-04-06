@@ -5,187 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>A Special Quest</title>
     <style>
-        :root { --pink: #ffb6c1; --dark-pink: #ff69b4; --bg: #fff0f5; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); text-align: center; padding: 20px; color: #333; }
-        .game-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: inline-block; max-width: 90%; min-width: 320px; margin-top: 20px; }
+        :root { --pink: #fff0f5; --red: #e74c3c; --dark-red: #c0392b; --text: #333; }
+        body { font-family: 'Courier New', Courier, monospace; background: var(--pink); text-align: center; padding: 20px; color: var(--text); }
+        .game-card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: inline-block; max-width: 90%; min-width: 320px; margin-top: 20px; border: 2px solid #ccc;}
         .hidden { display: none; }
-        button { background: var(--dark-pink); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 15px; }
+        button { background: var(--red); color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer; font-weight: bold; margin-top: 20px; font-size: 1.1em; transition: 0.2s;}
+        button:hover { background: var(--dark-red); }
+
+        /* --- THE NONOGRAM FIX (Styled after Reference Image) --- */
+        .nonogram-container { position: relative; display: inline-block; margin-top: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(5, 40px); gap: 0px; border: 3px solid #000; justify-content: center; }
+        .cell { width: 40px; height: 40px; border: 1px solid #000; background: #fff; cursor: pointer; box-sizing: border-box;}
+        .cell.filled { background: var(--red); border: 1px solid var(--red); }
         
-        /* Nonogram Styles */
-        .grid { display: grid; grid-template-columns: repeat(7, 35px); gap: 2px; justify-content: center; margin: 10px auto; }
-        .cell { width: 35px; height: 35px; border: 1px solid #eee; background: #fdfdfd; cursor: pointer; border-radius: 4px; }
-        .cell.filled { background: var(--dark-pink); }
-        .hint-row { display: flex; justify-content: center; gap: 15px; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: #888; }
+        .hint-row-fix { display: grid; grid-template-columns: repeat(5, 40px); gap: 0px; justify-content: center; border-left: 3px solid #000; border-right: 3px solid #000; border-top: 3px solid #000; box-sizing: border-box;}
+        .row-hint { padding: 5px; font-weight: bold; font-size: 18px; border: 1px solid #000; }
 
-        /* Dino Game Styles */
-        #gameCanvas { background: #fff; border-bottom: 2px solid #333; display: block; margin: 0 auto; border-radius: 10px; }
+        .hint-col-fix { position: absolute; top: 31px; left: -43px; display: flex; flex-direction: column; }
+        .col-hint { width: 40px; height: 40px; font-weight: bold; font-size: 20px; display: flex; align-items: center; justify-content: center; border: 1px solid #000; border-top: 3px solid #000; border-bottom: 3px solid #000; }
 
-        /* Quiz Styles */
-        .option { display: block; width: 100%; padding: 12px; margin: 8px 0; border: 2px solid var(--pink); border-radius: 12px; cursor: pointer; background: white; transition: 0.3s; font-size: 16px; }
+        /* --- STAGE 2 DINO GAME STYLES --- */
+        #gameCanvas { background: #fff; border-bottom: 2px solid #000; display: block; margin: 0 auto; border-radius: 10px; border: 1px solid #ccc;}
+
+        /* --- STAGE 3 QUIZ STYLES --- */
+        .quiz-container { text-align: left; max-width: 500px; margin: 0 auto; }
+        .option { display: block; width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ccc; border-radius: 12px; cursor: pointer; background: white; transition: 0.3s; font-size: 16px; text-align: left; }
         .correct { background-color: #d4edda !important; border-color: #28a745 !important; color: #155724; }
-        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24; }
-        .note { font-style: italic; color: var(--dark-pink); margin-top: 15px; font-weight: bold; font-size: 18px; }
-    </style>
-</head>
-<body>
-
-    <div id="stage1" class="game-card">
-        <h2>Level 1: Fill the Pattern</h2>
-        <p>Complete the shape to move forward!</p>
-        <div class="hint-row"><span>1 1</span> <span>3 3</span> <span>7</span> <span>7</span> <span>7</span> <span>3 3</span> <span>1 1</span></div>
-        <div class="grid" id="nonogram"></div>
-        <button onclick="checkNonogram()">Check Pattern</button>
-    </div>
-
-    <div id="stage2" class="game-card hidden">
-        <h2>Level 2: Heart Runner</h2>
-        <p>Jump over 10 obstacles! (Tap or Spacebar)</p>
-        <canvas id="gameCanvas" width="300" height="150"></canvas>
-        <p>Score: <span id="score">0</span> / 10</p>
-    </div>
-
-    <div id="stage3" class="game-card hidden">
-        <h2>Level 3: The Truth Test</h2>
-        
-        <div id="q1">
-            <p>1. Which shirt did you wear that made me have heart palpitations?</p>
-            <button class="option" onclick="answerQ1(this, true)">A. white buttoned up</button>
-            <button class="option" onclick="answerQ1(this, false)">B. blue college shirt</button>
-            <button class="option" onclick="answerQ1(this, false)">C. your white class shirt</button>
-        </div>
-
-        <div id="q2" class="hidden">
-            <p>2. Which part of you do I like the most?</p>
-            <button class="option q2-opt" onclick="answerQ2()">A. your eyes</button>
-            <button class="option q2-opt" onclick="answerQ2()">B. your smile</button>
-            <button class="option q2-opt" onclick="answerQ2()">C. your shoulders</button>
-            <div id="note2" class="note hidden">"I like everything about you >/////<"</div>
-            <button id="next2" class="hidden" onclick="showQ3()">Next Question</button>
-        </div>
-
-        <div id="q3" class="hidden">
-            <p>3. What's my name?</p>
-            <button class="option q3-opt" onclick="answerQ3()">A. Chaya</button>
-            <button class="option q3-opt" onclick="answerQ3()">B. Cahaya</button>
-            <button class="option q3-opt" onclick="answerQ3()">C. Cahya</button>
-            <div id="note3" class="note hidden">"Who cares what my name is, I want to be called yours."</div>
-            <button id="finalBtn" class="hidden" onclick="revealConfession()">Unlock Secret Message</button>
-        </div>
-    </div>
-
-    <div id="finalStage" class="game-card hidden">
-        <h1 style="color: var(--dark-pink);">❤️ To My Favorite Person ❤️</h1>
-        <p id="confessionText" style="white-space: pre-wrap; line-height: 1.6; font-size: 1.2em;">
-            Dear [Name],
-
-            I've been holding onto this for a while, but I wanted to tell you...
-            [that I like you. I'm doing this now because we're about to finish matriculation and will probably never see each other again so I wanted to take my chances.]
-        </p>
-    </div>
-
-    <script>
-        // --- 7x7 SLIM HEART SOLUTION ---
-        const solution = [
-            0,1,1,0,1,1,0,
-            1,1,1,1,1,1,1,
-            1,1,1,1,1,1,1,
-            1,1,1,1,1,1,1,
-            0,1,1,1,1,1,0,
-            0,0,1,1,1,0,0,
-            0,0,0,1,0,0,0
-        ]; 
-        const nogo = document.getElementById('nonogram');
-        for(let i=0; i<49; i++) {
-            let cell = document.createElement('div');
-            cell.classList.add('cell');
-            cell.onclick = () => cell.classList.toggle('filled');
-            nogo.appendChild(cell);
-        }
-
-        function checkNonogram() {
-            const cells = document.querySelectorAll('.cell');
-            let correct = true;
-            cells.forEach((c, i) => {
-                if(solution[i] === 1 && !c.classList.contains('filled')) correct = false;
-                if(solution[i] === 0 && c.classList.contains('filled')) correct = false;
-            });
-            if(correct) {
-                alert("Perfect heart! Next level...");
-                document.getElementById('stage1').classList.add('hidden');
-                document.getElementById('stage2').classList.remove('hidden');
-                startDino();
-            } else { alert("The heart isn't quite right yet. Try again!"); }
-        }
-
-        // --- DINO GAME LOGIC ---
-        function startDino() {
-            const canvas = document.getElementById('gameCanvas');
-            const ctx = canvas.getContext('2d');
-            let score = 0;
-            let player = { x: 20, y: 120, w: 20, h: 20, dy: 0, jump: -8, grounded: false };
-            let obstacles = [];
-            let frame = 0;
-            let gameActive = true;
-
-            function update() {
-                if(!gameActive) return;
-                if(score >= 10) {
-                    gameActive = false;
-                    document.getElementById('stage2').classList.add('hidden');
-                    document.getElementById('stage3').classList.remove('hidden');
-                    return;
-                }
-                frame++;
-                ctx.clearRect(0,0,300,150);
-                
-                player.dy += 0.5;
-                player.y += player.dy;
-                if(player.y > 120) { player.y = 120; player.dy = 0; player.grounded = true; }
-                ctx.fillStyle = "#ff69b4";
-                ctx.fillRect(player.x, player.y, player.w, player.h);
-
-                if(frame % 90 === 0) obstacles.push({ x: 300, y: 125, w: 15, h: 15 });
-                obstacles.forEach((o, i) => {
-                    o.x -= 3.5;
-                    ctx.fillStyle = "#333";
-                    ctx.fillRect(o.x, o.y, o.w, o.h);
-                    if(o.x < -20) { obstacles.splice(i, 1); score++; document.getElementById('score').innerText = score; }
-                    if(player.x < o.x + o.w && player.x + player.w > o.x && player.y < o.y + o.h && player.y + player.h > o.y) {
-                        score = 0; obstacles = []; document.getElementById('score').innerText = 0;
-                    }
-                });
-                requestAnimationFrame(update);
-            }
-            window.addEventListener('keydown', (e) => { if(e.code === 'Space' && player.grounded){ player.dy = player.jump; player.grounded = false; }});
-            canvas.onclick = () => { if(player.grounded){ player.dy = player.jump; player.grounded = false; }};
-            update();
-        }
-
-        // --- QUIZ LOGIC ---
-        function answerQ1(btn, isCorrect) {
-            if(isCorrect) {
-                btn.classList.add('correct');
-                setTimeout(() => { document.getElementById('q1').classList.add('hidden'); document.getElementById('q2').classList.remove('hidden'); }, 1000);
-            } else {
-                btn.classList.add('wrong');
-                alert("Wrong! I remember it perfectly...");
-            }
-        }
-        function answerQ2() {
-            document.querySelectorAll('.q2-opt').forEach(b => b.classList.add('correct'));
-            document.getElementById('note2').classList.remove('hidden');
-            document.getElementById('next2').classList.remove('hidden');
-        }
-        function showQ3() { document.getElementById('q2').classList.add('hidden'); document.getElementById('q3').classList.remove('hidden'); }
-        function answerQ3() {
-            document.querySelectorAll('.q3-opt').forEach(b => b.classList.add('wrong'));
-            document.getElementById('note3').classList.remove('hidden');
-            document.getElementById('finalBtn').classList.remove('hidden');
-        }
-        function revealConfession() {
-            document.getElementById('stage3').classList.add('hidden');
-            document.getElementById('finalStage').classList.remove('hidden');
-        }
-    </script>
-</body>
-</html>
+        .wrong { background-color: #f8d7da !important; border-color: #dc3545 !important; color: #721c24
