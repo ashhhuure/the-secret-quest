@@ -4,16 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Sky</title>
+    <!-- We must import the font for the fancy popup art to work -->
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
-        /* Using a built-in monospace font for that 'retro' feel without external loading issues */
         :root {
             --sky-blue: #a3d8f4;
             --pixel-border: #000000;
             --white: #ffffff;
+            --overlay-color: rgba(0, 0, 0, 0.7); /* The background dim */
         }
 
         body {
             background-color: var(--sky-blue);
+            /* Standard font for reliability */
             font-family: "Courier New", Courier, monospace;
             font-weight: bold;
             display: flex;
@@ -22,6 +25,28 @@
             height: 100vh;
             margin: 0;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* 
+           MAIN CONTENT DIMMING LAYER 
+           This layer wraps ALL your main gameplay containers.
+        */
+        #ui-layer {
+            transition: filter 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* The class applied when a popup is active */
+        .dimmed {
+            filter: brightness(30%); /* Decreased exposure! */
+            pointer-events: none; /* Prevents clicking on the background */
         }
 
         /* Background Decorations */
@@ -32,7 +57,7 @@
             user-select: none;
         }
 
-        /* Main UI Box */
+        /* Main UI Boxes (Base Style) */
         .container {
             background: white;
             border: 6px solid var(--pixel-border);
@@ -40,11 +65,10 @@
             padding: 40px;
             text-align: center;
             width: 350px;
-            z-index: 10; /* Ensures it is ABOVE the cats */
             position: relative;
         }
 
-        h1 { font-size: 2rem; margin-top: 0; color: #4a90e2; text-transform: uppercase; }
+        h1 { font-size: 1.8rem; margin-top: 0; color: #4a90e2; text-transform: uppercase; }
         
         .score {
             position: absolute;
@@ -72,7 +96,7 @@
             font-size: 1rem;
             cursor: pointer;
             margin: 5px;
-            border-radius: 15px; /* Rounded corners */
+            border-radius: 15px;
             transition: 0.1s;
         }
 
@@ -80,6 +104,73 @@
         button:active { transform: scale(0.95); }
 
         .hidden { display: none !important; }
+
+        /* 
+           CUSTOM CUTE POPUP STYLE 
+        */
+        .popup-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999; /* ABOVE EVERYTHING */
+        }
+
+        .popup-container {
+            background: white;
+            border: 8px double var(--pixel-border); /* Thicker double border */
+            box-shadow: 15px 15px 0px rgba(0,0,0,0.3);
+            width: 400px;
+            padding: 20px 30px 40px 30px; /* Extra bottom padding for cake */
+            text-align: center;
+            position: relative;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .popup-overlay.active .popup-container {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        /* THE LACE PATTERN (CSS generated pixel lace) */
+        .popup-lace {
+            position: absolute;
+            font-family: 'VT323', monospace;
+            font-size: 24px;
+            color: #ffcccc; /* Soft pink for lace */
+            line-height: 1;
+            width: 100%;
+            left: 0;
+            user-select: none;
+        }
+        
+        /* Top lace row */
+        .popup-lace.top {
+            top: -12px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        /* Bottom lace row */
+        .popup-lace.bottom {
+            bottom: -12px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        /* CUSTOM DECORATIONS FOR POPUP */
+        .popup-deco {
+            position: absolute;
+            font-size: 40px;
+            z-index: 100;
+        }
+        
+        .popup-deco.cats-tr { top: 5px; right: 10px; } /* Cats Top Right */
+        .popup-deco.cake-bl { bottom: -10px; left: 10px; } /* Cake Bottom Left */
+
+        .popup-title { font-size: 1.5rem; color: #d14d72; margin-top: 25px; }
+        .popup-msg { font-size: 1.2rem; margin-bottom: 25px; line-height: 1.4; }
 
         /* Postcard Style */
         #postcard {
@@ -91,79 +182,147 @@
             line-height: 1.6;
             text-align: left;
             position: relative;
-            z-index: 20;
         }
     </style>
 </head>
 <body>
 
-    <!-- Decorations -->
-    <div class="cat-deco" style="top:15%; left:10%;">🐱</div>
-    <div class="cat-deco" style="bottom:15%; right:10%;">🐾</div>
-    <div class="cat-deco" style="top:20%; right:15%;">☁️</div>
+    <!-- 
+       CUSTOM CUTE POPUP OVERLAY
+       Hidden by default (display:none added via JS)
+    -->
+    <div id="cute-popup" class="popup-overlay hidden">
+        <div class="popup-container">
+            <!-- Fancy Lace Borders -->
+            <div class="popup-lace top">vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv</div>
+            <div class="popup-lace bottom">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</div>
+            
+            <!-- Cute Emojis Requested -->
+            <div class="popup-deco cats-tr">🐱🐾</div>
+            <div class="popup-deco cake-bl">🍰🍓</div>
 
-    <!-- Page 1: Main Login -->
-    <div id="main-page" class="container">
-        <h1>Welcome to Sky</h1>
-        <input type="text" id="passInput" placeholder="ENTER PASSWORD">
-        <br>
-        <button onclick="checkPassword()">ENTER</button>
-        <br>
-        <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">Lost? Click below:</p>
-        <button onclick="startRelationshipCheck()">GET PASSWORD</button>
-    </div>
-
-    <!-- Page 2: Relationship Check -->
-    <div id="rel-check" class="container hidden">
-        <p style="font-size: 1.2rem;">Are you currently in a relationship?</p>
-        <div style="display: flex; justify-content: center;">
-            <button onclick="terminate()">YES</button>
-            <button onclick="startMathGame()">NO</button>
+            <h2 class="popup-title" id="p-title">Notification</h2>
+            <p class="popup-msg" id="p-msg">Message here!</p>
+            <div id="popup-btns">
+                <button onclick="closePopup('close')">CLOSE</button>
+            </div>
         </div>
     </div>
 
-    <!-- Page 3: Math Game -->
-    <div id="math-game" class="container hidden">
-        <div class="score">Score: <span id="scoreVal">0</span>/3</div>
-        <p id="math-question" style="font-size: 1.5rem;"></p>
-        <input type="text" id="math-answer" placeholder="Answer here">
-        <br>
-        <button onclick="checkMath()">SUBMIT</button>
-    </div>
+    <!-- UI LAYER (Allows background dimming) -->
+    <div id="ui-layer">
+        <!-- Background Decorations -->
+        <div class="cat-deco" style="top:15%; left:10%;">🐱</div>
+        <div class="cat-deco" style="bottom:15%; right:10%;">🐾</div>
+        <div class="cat-deco" style="top:20%; right:15%;">☁️</div>
 
-    <!-- Page 4: The Confession -->
-    <div id="postcard-container" class="hidden">
-        <div id="postcard">
-            <h2 style="margin-top:0; color: #4a90e2;">Hi there,</h2>
-            <p>
-                You found the password! I wanted to send you something special.
-                <br><br>
-                [REPLACE THIS: Write your sweet message here! Let him know how you feel.]
-                <br><br>
-                With love, <br>
-                [Your Name]
-            </p>
-            <div style="text-align: right; font-size: 2rem;">🐱</div>
+        <!-- Page 1: Main Login -->
+        <div id="main-page" class="container">
+            <h1>Welcome to Sky</h1>
+            <input type="text" id="passInput" placeholder="ENTER PASSWORD">
+            <br>
+            <button onclick="checkPassword()">ENTER</button>
+            <br>
+            <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">Need a hint?</p>
+            <button onclick="startRelationshipCheck()">GET PASSWORD</button>
         </div>
-    </div>
+
+        <!-- Page 2: Relationship Check -->
+        <div id="rel-check" class="container hidden">
+            <p style="font-size: 1.2rem;">Are you currently in a relationship?</p>
+            <div style="display: flex; justify-content: center;">
+                <button onclick="terminate()">YES</button>
+                <button onclick="startMathGame()">NO</button>
+            </div>
+        </div>
+
+        <!-- Page 3: Math Game -->
+        <div id="math-game" class="container hidden">
+            <div class="score">Score: <span id="scoreVal">0</span>/3</div>
+            <p id="math-question" style="font-size: 1.5rem;"></p>
+            <input type="text" id="math-answer" placeholder="Ans">
+            <br>
+            <button onclick="checkMath()">SUBMIT</button>
+        </div>
+
+        <!-- Page 4: The Confession -->
+        <div id="postcard-container" class="hidden">
+            <div id="postcard">
+                <h2 style="margin-top:0; color: #4a90e2;">Hi there,</h2>
+                <p>
+                    You found the password! I wanted to send you something special.
+                    <br><br>
+                    [REPLACE THIS: Write your sweet message here! Let him know how you feel.]
+                    <br><br>
+                    With love, <br>
+                    [Your Name]
+                </p>
+                <div style="text-align: right; font-size: 2rem;">🐱🍰</div>
+            </div>
+        </div>
+    </div><!-- End UI Layer -->
 
     <script>
         let score = 0;
         let currentAnswer = 0;
+        let popupCallback = null; // Stores what to do after a choice
         const questions = [
             { q: "15 + 24 = ?", a: 39 },
             { q: "7 * 8 = ?", a: 56 },
             { q: "100 / 4 = ?", a: 25 }
         ];
 
+        // --- CUTE POPUP SYSTEM ---
+        const uiLayer = document.getElementById('ui-layer');
+        const popup = document.getElementById('cute-popup');
+        const pTitle = document.getElementById('p-title');
+        const pMsg = document.getElementById('p-msg');
+        const pBtns = document.getElementById('popup-btns');
+
+        function openPopup(title, msg, type, callback) {
+            pTitle.innerText = title;
+            pMsg.innerText = msg;
+            popupCallback = callback;
+            
+            // Set up buttons based on type
+            pBtns.innerHTML = "";
+            if (type === 'ok') {
+                pBtns.innerHTML = `<button onclick="closePopup('ok')">OKAY!</button>`;
+            } else if (type === 'yesno') {
+                pBtns.innerHTML = `
+                    <button onclick="closePopup('yes')">YES</button>
+                    <button onclick="closePopup('no')">NO</button>
+                `;
+            }
+
+            popup.classList.remove('hidden'); // Make it exist
+            uiLayer.classList.add('dimmed'); // Dim the background
+            
+            // Small delay to trigger the animation
+            setTimeout(() => { popup.classList.add('active'); }, 10);
+        }
+
+        function closePopup(choice) {
+            popup.classList.remove('active'); // Start animation close
+            uiLayer.classList.remove('dimmed'); // Restore exposure
+
+            // Remove it completely after animation
+            setTimeout(() => { popup.classList.add('hidden'); }, 200);
+
+            // Execute the next step in the logic if callback exists
+            if (popupCallback) {
+                popupCallback(choice);
+                popupCallback = null; // Clear it
+            }
+        }
+
+        // --- GAME LOGIC (Using new popups) ---
+
         function showPage(id) {
-            // Hide everything
             document.getElementById('main-page').classList.add('hidden');
             document.getElementById('rel-check').classList.add('hidden');
             document.getElementById('math-game').classList.add('hidden');
             document.getElementById('postcard-container').classList.add('hidden');
-            
-            // Show target
             document.getElementById(id).classList.remove('hidden');
         }
 
@@ -172,7 +331,7 @@
             if(val === "Light") {
                 showPage('postcard-container');
             } else {
-                alert("Incorrect password. Hint: Use 'Get Password' button!");
+                openPopup("Incorrect!", "Wrong password... Try 'Get Password' for a hint!", "ok");
             }
         }
 
@@ -181,17 +340,22 @@
         }
 
         function terminate() {
-            document.body.innerHTML = `
-                <div class="container">
-                    <p style="font-size: 1.2rem;">Ah, then I wish you a happy relationship. Thank you for talking to me :D</p>
-                </div>`;
+            // When terminating, we just dim and keep the popup open
+            openPopup("Noted!", "Ah, then I wish you a happy relationship. Thank you for talking to me :D", "ok", () => {
+                // When they click OK on termination, keep it simple
+                document.body.innerHTML = `
+                    <div class="container">
+                        <p style="font-size: 1.2rem;">Have a wonderful day! :D</p>
+                    </div>`;
+            });
         }
 
         function startMathGame() {
-            alert("In order to proceed, please answer these questions correctly!");
-            score = 0;
-            showPage('math-game');
-            updateMathQuestion();
+            openPopup("Game Start!", "To proceed, please answer these correctly! (If you miss one, the score resets)", "ok", () => {
+                score = 0;
+                showPage('math-game');
+                updateMathQuestion();
+            });
         }
 
         function updateMathQuestion() {
@@ -207,16 +371,22 @@
             if(userAns === currentAnswer) {
                 score++;
                 if(score === 3) {
-                    alert("Correct! The password is: Light");
-                    if(confirm("Return to main page to enter the password?")) {
-                        showPage('main-page');
-                    }
+                    // CUTE PASSWORD POPUP
+                    openPopup("Success!", "Excellent! Your password is: Light", "ok", () => {
+                        // Return Page Question
+                        openPopup("Almost done!", "Return to main page to enter the password?", "yesno", (choice) => {
+                            if(choice === 'yes') {
+                                showPage('main-page');
+                            }
+                        });
+                    });
                 } else {
                     updateMathQuestion();
                 }
             } else {
-                alert("Oops! Wrong answer. Starting over...");
-                startMathGame();
+                openPopup("Reset!", "Oops! Wrong answer. Starting over!", "ok", () => {
+                    startMathGame();
+                });
             }
         }
     </script>
