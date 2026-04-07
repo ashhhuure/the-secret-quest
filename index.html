@@ -4,102 +4,221 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Sky</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
+        /* Using a built-in monospace font for that 'retro' feel without external loading issues */
         :root {
             --sky-blue: #a3d8f4;
-            --pixel-border: #555;
+            --pixel-border: #000000;
             --white: #ffffff;
         }
 
         body {
             background-color: var(--sky-blue);
-            font-family: 'VT323', monospace;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
             overflow: hidden;
-            image-rendering: pixelated;
         }
 
-        /* Pixel Cat Background elements */
+        /* Background Decorations */
         .cat-deco {
             position: absolute;
-            font-size: 40px;
-            opacity: 0.6;
+            font-size: 50px;
+            z-index: 1;
+            user-select: none;
         }
 
+        /* Main UI Box */
         .container {
             background: white;
-            border: 4px solid var(--pixel-border);
-            box-shadow: 8px 8px 0px rgba(0,0,0,0.2);
-            padding: 30px;
+            border: 6px solid var(--pixel-border);
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
+            padding: 40px;
             text-align: center;
-            width: 320px;
+            width: 350px;
+            z-index: 10; /* Ensures it is ABOVE the cats */
             position: relative;
         }
 
-        h1 { font-size: 2.5rem; margin-top: 0; color: #4a90e2; }
+        h1 { font-size: 2rem; margin-top: 0; color: #4a90e2; text-transform: uppercase; }
         
         .score {
             position: absolute;
             top: 10px;
             right: 10px;
-            font-size: 1.2rem;
+            font-size: 1rem;
             color: #d14d72;
         }
 
         input[type="text"] {
-            border: 3px solid var(--pixel-border);
+            border: 4px solid var(--pixel-border);
             padding: 10px;
-            font-family: 'VT323', monospace;
-            font-size: 1.5rem;
+            font-family: inherit;
+            font-size: 1.2rem;
             width: 80%;
             margin-bottom: 20px;
-            outline: none;
+            text-align: center;
         }
 
         button {
             background: #fff;
-            border: 3px solid var(--pixel-border);
-            padding: 5px 15px;
-            font-family: 'VT323', monospace;
-            font-size: 1.2rem;
+            border: 4px solid var(--pixel-border);
+            padding: 10px 20px;
+            font-family: inherit;
+            font-size: 1rem;
             cursor: pointer;
-            transition: transform 0.1s;
             margin: 5px;
-            border-radius: 10px; /* Rounded corners as requested */
+            border-radius: 15px; /* Rounded corners */
+            transition: 0.1s;
         }
 
-        button:active { transform: translateY(4px); }
-        button:hover { background: #f0f0f0; }
+        button:hover { background: #e0f4ff; }
+        button:active { transform: scale(0.95); }
 
-        .hidden { display: none; }
+        .hidden { display: none !important; }
 
         /* Postcard Style */
         #postcard {
             background: #fff;
             border: 2px solid #ddd;
             padding: 40px;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
             max-width: 400px;
             line-height: 1.6;
             text-align: left;
             position: relative;
-        }
-        
-        #postcard::after {
-            content: "🐱";
-            position: absolute;
-            bottom: 10px;
-            right: 10px;
+            z-index: 20;
         }
     </style>
 </head>
 <body>
 
-    <div class="cat-deco" style="top:10%; left:10%;">🐱</div>
-    <div class="cat-deco" style="bottom:10%; right:10%;">🐾</div>
-    <div class
+    <!-- Decorations -->
+    <div class="cat-deco" style="top:15%; left:10%;">🐱</div>
+    <div class="cat-deco" style="bottom:15%; right:10%;">🐾</div>
+    <div class="cat-deco" style="top:20%; right:15%;">☁️</div>
+
+    <!-- Page 1: Main Login -->
+    <div id="main-page" class="container">
+        <h1>Welcome to Sky</h1>
+        <input type="text" id="passInput" placeholder="ENTER PASSWORD">
+        <br>
+        <button onclick="checkPassword()">ENTER</button>
+        <br>
+        <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">Lost? Click below:</p>
+        <button onclick="startRelationshipCheck()">GET PASSWORD</button>
+    </div>
+
+    <!-- Page 2: Relationship Check -->
+    <div id="rel-check" class="container hidden">
+        <p style="font-size: 1.2rem;">Are you currently in a relationship?</p>
+        <div style="display: flex; justify-content: center;">
+            <button onclick="terminate()">YES</button>
+            <button onclick="startMathGame()">NO</button>
+        </div>
+    </div>
+
+    <!-- Page 3: Math Game -->
+    <div id="math-game" class="container hidden">
+        <div class="score">Score: <span id="scoreVal">0</span>/3</div>
+        <p id="math-question" style="font-size: 1.5rem;"></p>
+        <input type="text" id="math-answer" placeholder="Answer here">
+        <br>
+        <button onclick="checkMath()">SUBMIT</button>
+    </div>
+
+    <!-- Page 4: The Confession -->
+    <div id="postcard-container" class="hidden">
+        <div id="postcard">
+            <h2 style="margin-top:0; color: #4a90e2;">Hi there,</h2>
+            <p>
+                You found the password! I wanted to send you something special.
+                <br><br>
+                [REPLACE THIS: Write your sweet message here! Let him know how you feel.]
+                <br><br>
+                With love, <br>
+                [Your Name]
+            </p>
+            <div style="text-align: right; font-size: 2rem;">🐱</div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let currentAnswer = 0;
+        const questions = [
+            { q: "15 + 24 = ?", a: 39 },
+            { q: "7 * 8 = ?", a: 56 },
+            { q: "100 / 4 = ?", a: 25 }
+        ];
+
+        function showPage(id) {
+            // Hide everything
+            document.getElementById('main-page').classList.add('hidden');
+            document.getElementById('rel-check').classList.add('hidden');
+            document.getElementById('math-game').classList.add('hidden');
+            document.getElementById('postcard-container').classList.add('hidden');
+            
+            // Show target
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function checkPassword() {
+            const val = document.getElementById('passInput').value.trim();
+            if(val === "Light") {
+                showPage('postcard-container');
+            } else {
+                alert("Incorrect password. Hint: Use 'Get Password' button!");
+            }
+        }
+
+        function startRelationshipCheck() {
+            showPage('rel-check');
+        }
+
+        function terminate() {
+            document.body.innerHTML = `
+                <div class="container">
+                    <p style="font-size: 1.2rem;">Ah, then I wish you a happy relationship. Thank you for talking to me :D</p>
+                </div>`;
+        }
+
+        function startMathGame() {
+            alert("In order to proceed, please answer these questions correctly!");
+            score = 0;
+            showPage('math-game');
+            updateMathQuestion();
+        }
+
+        function updateMathQuestion() {
+            document.getElementById('scoreVal').innerText = score;
+            document.getElementById('math-question').innerText = questions[score].q;
+            currentAnswer = questions[score].a;
+            document.getElementById('math-answer').value = "";
+            document.getElementById('math-answer').focus();
+        }
+
+        function checkMath() {
+            const userAns = parseInt(document.getElementById('math-answer').value);
+            if(userAns === currentAnswer) {
+                score++;
+                if(score === 3) {
+                    alert("Correct! The password is: Light");
+                    if(confirm("Return to main page to enter the password?")) {
+                        showPage('main-page');
+                    }
+                } else {
+                    updateMathQuestion();
+                }
+            } else {
+                alert("Oops! Wrong answer. Starting over...");
+                startMathGame();
+            }
+        }
+    </script>
+</body>
+</html>
