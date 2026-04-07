@@ -4,34 +4,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Sky</title>
-    <!-- We must import the font for the fancy popup art to work -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
     <style>
         :root {
             --sky-blue: #a3d8f4;
             --pixel-border: #000000;
             --white: #ffffff;
-            --overlay-color: rgba(0, 0, 0, 0.7); /* The background dim */
         }
 
         body {
             background-color: var(--sky-blue);
-            /* Standard font for reliability */
             font-family: "Courier New", Courier, monospace;
             font-weight: bold;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            overflow: hidden;
-            position: relative;
+            overflow-x: hidden;
         }
 
-        /* 
-           MAIN CONTENT DIMMING LAYER 
-           This layer wraps ALL your main gameplay containers.
-        */
         #ui-layer {
             transition: filter 0.3s ease;
             display: flex;
@@ -43,40 +35,22 @@
             z-index: 5;
         }
 
-        /* The class applied when a popup is active */
-        .dimmed {
-            filter: brightness(30%); /* Decreased exposure! */
-            pointer-events: none; /* Prevents clicking on the background */
-        }
+        .dimmed { filter: brightness(30%); pointer-events: none; }
 
-        /* Background Decorations */
-        .cat-deco {
-            position: absolute;
-            font-size: 50px;
-            z-index: 1;
-            user-select: none;
-        }
+        .cat-deco { position: absolute; font-size: 50px; z-index: 1; user-select: none; }
 
-        /* Main UI Boxes (Base Style) */
         .container {
             background: white;
             border: 6px solid var(--pixel-border);
             box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
             padding: 40px;
             text-align: center;
-            width: 350px;
+            width: 380px;
             position: relative;
         }
 
         h1 { font-size: 1.8rem; margin-top: 0; color: #4a90e2; text-transform: uppercase; }
-        
-        .score {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 1rem;
-            color: #d14d72;
-        }
+        .score { position: absolute; top: 10px; right: 10px; font-size: 1rem; color: #d14d72; }
 
         input[type="text"] {
             border: 4px solid var(--pixel-border);
@@ -101,26 +75,22 @@
         }
 
         button:hover { background: #e0f4ff; }
-        button:active { transform: scale(0.95); }
-
         .hidden { display: none !important; }
 
-        /* 
-           CUSTOM CUTE POPUP STYLE 
-        */
+        /* POPUP STYLES */
         .popup-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
-            z-index: 9999; /* ABOVE EVERYTHING */
+            z-index: 9999;
         }
 
         .popup-container {
             background: white;
-            border: 8px double var(--pixel-border); /* Thicker double border */
+            border: 8px double var(--pixel-border);
             box-shadow: 15px 15px 0px rgba(0,0,0,0.3);
             width: 400px;
-            padding: 20px 30px 40px 30px; /* Extra bottom padding for cake */
+            padding: 20px 30px 40px 30px;
             text-align: center;
             position: relative;
             transform: scale(0.9);
@@ -128,96 +98,65 @@
             transition: transform 0.2s ease, opacity 0.2s ease;
         }
 
-        .popup-overlay.active .popup-container {
-            transform: scale(1);
-            opacity: 1;
-        }
+        .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
 
-        /* THE LACE PATTERN (CSS generated pixel lace) */
         .popup-lace {
             position: absolute;
             font-family: 'VT323', monospace;
             font-size: 24px;
-            color: #ffcccc; /* Soft pink for lace */
-            line-height: 1;
+            color: #ffcccc;
             width: 100%;
             left: 0;
-            user-select: none;
         }
-        
-        /* Top lace row */
-        .popup-lace.top {
-            top: -12px;
-            height: 12px;
-            overflow: hidden;
-        }
+        .popup-lace.top { top: -12px; }
+        .popup-lace.bottom { bottom: -12px; }
 
-        /* Bottom lace row */
-        .popup-lace.bottom {
-            bottom: -12px;
-            height: 12px;
-            overflow: hidden;
-        }
+        .popup-deco { position: absolute; font-size: 40px; z-index: 100; }
+        .popup-deco.cats-tr { top: 5px; right: 10px; }
+        .popup-deco.cake-bl { bottom: -10px; left: 10px; }
 
-        /* CUSTOM DECORATIONS FOR POPUP */
-        .popup-deco {
-            position: absolute;
-            font-size: 40px;
-            z-index: 100;
-        }
-        
-        .popup-deco.cats-tr { top: 5px; right: 10px; } /* Cats Top Right */
-        .popup-deco.cake-bl { bottom: -10px; left: 10px; } /* Cake Bottom Left */
-
-        .popup-title { font-size: 1.5rem; color: #d14d72; margin-top: 25px; }
-        .popup-msg { font-size: 1.2rem; margin-bottom: 25px; line-height: 1.4; }
-
-        /* Postcard Style */
+        /* POSTCARD STYLE */
         #postcard {
             background: #fff;
             border: 2px solid #ddd;
             padding: 40px;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.1);
-            max-width: 400px;
+            max-width: 500px;
             line-height: 1.6;
             text-align: left;
-            position: relative;
+            margin: 20px;
         }
+        #postcard p { margin-bottom: 15px; font-size: 0.95rem; }
     </style>
 </head>
 <body>
 
-    <!-- 
-       CUSTOM CUTE POPUP OVERLAY
-       Hidden by default (display:none added via JS)
-    -->
     <div id="cute-popup" class="popup-overlay hidden">
         <div class="popup-container">
-            <!-- Fancy Lace Borders -->
             <div class="popup-lace top">vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv</div>
             <div class="popup-lace bottom">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</div>
-            
-            <!-- Cute Emojis Requested -->
             <div class="popup-deco cats-tr">🐱🐾</div>
             <div class="popup-deco cake-bl">🍰🍓</div>
-
-            <h2 class="popup-title" id="p-title">Notification</h2>
-            <p class="popup-msg" id="p-msg">Message here!</p>
-            <div id="popup-btns">
-                <button onclick="closePopup('close')">CLOSE</button>
-            </div>
+            <h2 id="p-title" style="color:#d14d72;">Notification</h2>
+            <p id="p-msg" style="margin-bottom:20px;"></p>
+            <div id="popup-btns"></div>
         </div>
     </div>
 
-    <!-- UI LAYER (Allows background dimming) -->
     <div id="ui-layer">
-        <!-- Background Decorations -->
         <div class="cat-deco" style="top:15%; left:10%;">🐱</div>
         <div class="cat-deco" style="bottom:15%; right:10%;">🐾</div>
         <div class="cat-deco" style="top:20%; right:15%;">☁️</div>
 
-        <!-- Page 1: Main Login -->
-        <div id="main-page" class="container">
+        <div id="name-page" class="container">
+            <h1>Welcome to Sky</h1>
+            <p>Please enter your name to proceed:</p>
+            <input type="text" id="userNameInput" placeholder="Your Name">
+            <br>
+            <button onclick="saveName()">CONTINUE</button>
+        </div>
+
+        <div id="main-page" class="container hidden">
             <h1>Welcome to Sky</h1>
             <input type="text" id="passInput" placeholder="ENTER PASSWORD">
             <br>
@@ -227,16 +166,12 @@
             <button onclick="startRelationshipCheck()">GET PASSWORD</button>
         </div>
 
-        <!-- Page 2: Relationship Check -->
         <div id="rel-check" class="container hidden">
-            <p style="font-size: 1.2rem;">Are you currently in a relationship?</p>
-            <div style="display: flex; justify-content: center;">
-                <button onclick="terminate()">YES</button>
-                <button onclick="startMathGame()">NO</button>
-            </div>
+            <p>Are you currently in a relationship?</p>
+            <button onclick="terminate()">YES</button>
+            <button onclick="startMathGame()">NO</button>
         </div>
 
-        <!-- Page 3: Math Game -->
         <div id="math-game" class="container hidden">
             <div class="score">Score: <span id="scoreVal">0</span>/3</div>
             <p id="math-question" style="font-size: 1.5rem;"></p>
@@ -245,148 +180,101 @@
             <button onclick="checkMath()">SUBMIT</button>
         </div>
 
-        <!-- Page 4: The Confession -->
         <div id="postcard-container" class="hidden">
             <div id="postcard">
-                <h2 style="margin-top:0; color: #4a90e2;">Hi there,</h2>
-                <p>
-                    You found the password! I wanted to send you something special.
-                    <br><br>
-                    [REPLACE THIS: Write your sweet message here! Let him know how you feel.]
-                    <br><br>
-                    With love, <br>
-                    [Your Name]
-                </p>
-                <div style="text-align: right; font-size: 2rem;">🐱🍰</div>
+                <h2 style="color: #4a90e2;">Hello <span id="display-name"></span>,</h2>
+                <p>Congratulations on getting the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
+                
+                <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. There are many attractive guys in college but you were the only that was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. Every time you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during English workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. But all my feelings aside, my goal is to literally just tell you how I feel about you. Sometimes I act a certain way, but I was mostly just confused with how to deal with my feelings towards you.</p>
+
+                <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying it before moving on to my next chapter in life. I don't know a lot about you aside of your class, your name and who you hang out with. But I can tell you're a great guy with a really nice personality. Well, I'm also a quiet person so I think quietness on you is an attractive trait. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
+
+                <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there was nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I don't mean to disrespect.</p>
+
+                <p>Please have a good day or night, whenever you're reading this.</p>
+
+                <p>With sincerity,<br>Chaya 🐱</p>
             </div>
         </div>
-    </div><!-- End UI Layer -->
+    </div>
 
     <script>
         let score = 0;
         let currentAnswer = 0;
-        let popupCallback = null; // Stores what to do after a choice
-        const questions = [
-            { q: "15 + 24 = ?", a: 39 },
-            { q: "7 * 8 = ?", a: 56 },
-            { q: "100 / 4 = ?", a: 25 }
-        ];
-
-        // --- CUTE POPUP SYSTEM ---
-        const uiLayer = document.getElementById('ui-layer');
-        const popup = document.getElementById('cute-popup');
-        const pTitle = document.getElementById('p-title');
-        const pMsg = document.getElementById('p-msg');
-        const pBtns = document.getElementById('popup-btns');
+        let userName = "";
+        let popupCallback = null;
+        const questions = [{q:"15+24", a:39}, {q:"7*8", a:56}, {q:"100/4", a:25}];
 
         function openPopup(title, msg, type, callback) {
-            pTitle.innerText = title;
-            pMsg.innerText = msg;
+            document.getElementById('p-title').innerText = title;
+            document.getElementById('p-msg').innerText = msg;
             popupCallback = callback;
-            
-            // Set up buttons based on type
-            pBtns.innerHTML = "";
-            if (type === 'ok') {
-                pBtns.innerHTML = `<button onclick="closePopup('ok')">OKAY!</button>`;
-            } else if (type === 'yesno') {
-                pBtns.innerHTML = `
-                    <button onclick="closePopup('yes')">YES</button>
-                    <button onclick="closePopup('no')">NO</button>
-                `;
-            }
-
-            popup.classList.remove('hidden'); // Make it exist
-            uiLayer.classList.add('dimmed'); // Dim the background
-            
-            // Small delay to trigger the animation
-            setTimeout(() => { popup.classList.add('active'); }, 10);
+            const btns = document.getElementById('popup-btns');
+            btns.innerHTML = type === 'ok' ? `<button onclick="closePopup('ok')">OKAY!</button>` : 
+                             `<button onclick="closePopup('yes')">YES</button><button onclick="closePopup('no')">NO</button>`;
+            document.getElementById('cute-popup').classList.remove('hidden');
+            document.getElementById('ui-layer').classList.add('dimmed');
+            setTimeout(() => { document.getElementById('cute-popup').classList.add('active'); }, 10);
         }
 
         function closePopup(choice) {
-            popup.classList.remove('active'); // Start animation close
-            uiLayer.classList.remove('dimmed'); // Restore exposure
-
-            // Remove it completely after animation
-            setTimeout(() => { popup.classList.add('hidden'); }, 200);
-
-            // Execute the next step in the logic if callback exists
-            if (popupCallback) {
-                popupCallback(choice);
-                popupCallback = null; // Clear it
-            }
+            document.getElementById('cute-popup').classList.remove('active');
+            document.getElementById('ui-layer').classList.remove('dimmed');
+            setTimeout(() => { document.getElementById('cute-popup').classList.add('hidden'); }, 200);
+            if (popupCallback) { popupCallback(choice); popupCallback = null; }
         }
 
-        // --- GAME LOGIC (Using new popups) ---
-
         function showPage(id) {
-            document.getElementById('main-page').classList.add('hidden');
-            document.getElementById('rel-check').classList.add('hidden');
-            document.getElementById('math-game').classList.add('hidden');
-            document.getElementById('postcard-container').classList.add('hidden');
+            document.querySelectorAll('.container, #postcard-container').forEach(el => el.classList.add('hidden'));
             document.getElementById(id).classList.remove('hidden');
         }
 
-        function checkPassword() {
-            const val = document.getElementById('passInput').value.trim();
-            if(val === "Light") {
-                showPage('postcard-container');
+        function saveName() {
+            const input = document.getElementById('userNameInput').value.trim();
+            if(input !== "") {
+                userName = input;
+                document.getElementById('display-name').innerText = userName;
+                showPage('main-page');
             } else {
-                openPopup("Incorrect!", "Wrong password... Try 'Get Password' for a hint!", "ok");
+                alert("Please enter a name!");
             }
         }
 
-        function startRelationshipCheck() {
-            showPage('rel-check');
+        function checkPassword() {
+            if(document.getElementById('passInput').value.trim() === "Light") showPage('postcard-container');
+            else openPopup("Incorrect!", "Wrong password... Try 'Get Password'!", "ok");
         }
 
+        function startRelationshipCheck() { showPage('rel-check'); }
+
         function terminate() {
-            // When terminating, we just dim and keep the popup open
             openPopup("Noted!", "Ah, then I wish you a happy relationship. Thank you for talking to me :D", "ok", () => {
-                // When they click OK on termination, keep it simple
-                document.body.innerHTML = `
-                    <div class="container">
-                        <p style="font-size: 1.2rem;">Have a wonderful day! :D</p>
-                    </div>`;
+                document.body.innerHTML = `<div class="container"><p>Have a wonderful day! :D</p></div>`;
             });
         }
 
         function startMathGame() {
-            openPopup("Game Start!", "To proceed, please answer these correctly! (If you miss one, the score resets)", "ok", () => {
-                score = 0;
-                showPage('math-game');
-                updateMathQuestion();
+            openPopup("Game Start!", "Answer these correctly to proceed!", "ok", () => {
+                score = 0; showPage('math-game'); updateMathQuestion();
             });
         }
 
         function updateMathQuestion() {
             document.getElementById('scoreVal').innerText = score;
-            document.getElementById('math-question').innerText = questions[score].q;
+            document.getElementById('math-question').innerText = questions[score].q + " = ?";
             currentAnswer = questions[score].a;
             document.getElementById('math-answer').value = "";
-            document.getElementById('math-answer').focus();
         }
 
         function checkMath() {
-            const userAns = parseInt(document.getElementById('math-answer').value);
-            if(userAns === currentAnswer) {
+            if(parseInt(document.getElementById('math-answer').value) === currentAnswer) {
                 score++;
-                if(score === 3) {
-                    // CUTE PASSWORD POPUP
-                    openPopup("Success!", "Excellent! Your password is: Light", "ok", () => {
-                        // Return Page Question
-                        openPopup("Almost done!", "Return to main page to enter the password?", "yesno", (choice) => {
-                            if(choice === 'yes') {
-                                showPage('main-page');
-                            }
-                        });
-                    });
-                } else {
-                    updateMathQuestion();
-                }
-            } else {
-                openPopup("Reset!", "Oops! Wrong answer. Starting over!", "ok", () => {
-                    startMathGame();
+                if(score === 3) openPopup("Success!", "Your password is: Light", "ok", () => {
+                    openPopup("Almost done!", "Return to main page?", "yesno", (c) => { if(c==='yes') showPage('main-page'); });
                 });
+                else updateMathQuestion();
+            } else {
+                openPopup("Reset!", "Wrong! Starting over!", "ok", () => startMathGame());
             }
         }
     </script>
