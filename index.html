@@ -7,19 +7,17 @@
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Indie+Flower&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* 2. Changed background to a GIF - Defined as a variable for easy updates */
             --sky-bg: url('bg.gif'); 
             --pixel-border: #000000;
         }
 
         body {
-            /* 2. Replaced solid color background with the GIF */
             background-image: var(--sky-bg);
-            /* Important: Cover and center ensure the gif covers the whole page */
             background-size: cover;
             background-position: center;
-            background-attachment: fixed; /* Keep it fixed while scrolling */
-
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            
             font-family: "Courier New", Courier, monospace;
             font-weight: bold;
             display: flex;
@@ -45,7 +43,7 @@
         .dimmed { filter: brightness(30%); pointer-events: none; }
         
         .container {
-            background: rgba(255, 255, 255, 0.9); /* Added slight translucency to the boxes so the GIF peeks through */
+            background: rgba(255, 255, 255, 0.9);
             border: 6px solid var(--pixel-border);
             box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
             padding: 40px;
@@ -81,11 +79,10 @@
             transition: 0.1s;
         }
 
-        /* HOVER EFFECT ADDED TO BUTTONS */
         button:hover {
-            background: #e0f4ff; /* Pale blue hover color */
-            border-color: #4a90e2; /* Matching blue border */
-            transform: scale(1.05); /* Slight grow effect */
+            background: #e0f4ff;
+            border-color: #4a90e2;
+            transform: scale(1.05);
         }
 
         .hidden { display: none !important; }
@@ -98,7 +95,7 @@
         }
 
         .popup-container {
-            background: rgba(255, 255, 255, 0.95); /* Translucent popup */
+            background: rgba(255, 255, 255, 0.95);
             border: 8px double var(--pixel-border);
             box-shadow: 15px 15px 0px rgba(0,0,0,0.3);
             width: 400px;
@@ -112,21 +109,18 @@
 
         .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
         
-        /* POSTCARD LAYOUT STYLES */
         #postcard-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 40px 20px;
-            position: relative; /* Return button is relative to this *now large* container */
+            position: relative;
             
-            /* 1. Set full width/height so the button can go 'as far as possible' */
             width: 100vw;
             height: 100vh;
         }
 
         #postcard {
-            /* Keep postcard background as-is */
             background-image: url('postcard-bg.jpg');
             background-size: cover;
             background-position: center;
@@ -137,7 +131,7 @@
             width: 750px;
             height: 480px; 
             display: flex;
-            position: relative;
+            position: relative; /* This is key for anchoring the X button */
             text-align: left;
             overflow: hidden; 
         }
@@ -195,20 +189,47 @@
             margin-bottom: 25px;
         }
 
-        /* 1. NEW RETURN BUTTON STYLE - Moved to bottom right corner of screen */
-        .postcard-return-btn {
+        /* 1 & 2. NEW PIXELATED X BUTTON STYLE */
+        .postcard-close-x {
+            /* Positioning */
             position: absolute;
-            /* Anchored to the viewport's edge, away from the postcard */
-            bottom: 20px; 
-            right: 20px; /* Aligned far right with some space */
+            top: 23px;    /* Fine-tuned to match the 'tiny white box' spot */
+            right: 23px;  /* Fine-tuned to match the 'tiny white box' spot */
             
-            border-radius: 5px; /* Boxy aesthetic */
-            padding: 5px 15px; /* Small, rectangular */
-            font-size: 0.9rem;
-            font-family: "Courier New", Courier, monospace;
-            text-transform: capitalize; 
-            z-index: 100; /* Extra high to ensure it floats above everything else */
-            margin: 0; /* Reset margins */
+            /* Box Styling: Square, black outlined, minimal padding */
+            width: 26px;  /* Matches the scale of the original white box */
+            height: 26px; /* Matches the scale of the original white box */
+            background-color: white;
+            border: 2px solid #000000; /* Black outlined box */
+            
+            /* Center the text 'X' */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+            /* Pixel Font and Appearance */
+            font-family: 'VT323', monospace; /* Pixelated font */
+            font-size: 1.4rem;
+            color: #000000;
+            cursor: pointer;
+            z-index: 100; /* Float above content */
+
+            /* Reset standard button styles */
+            padding: 0;
+            margin: 0;
+            line-height: 1;
+            text-transform: uppercase;
+            box-shadow: none;
+            border-radius: 0; /* Boxy aesthetic */
+            
+            transition: background 0.1s, transform 0.1s;
+        }
+
+        /* Hover effect updated for the X box */
+        .postcard-close-x:hover {
+            background-color: #f0f0f0; /* Light gray on hover */
+            transform: scale(1.05);     /* Keep the slight grow */
+            border-color: #000000;      /* Ensure border stays black */
         }
     </style>
 </head>
@@ -266,6 +287,9 @@
         <div id="postcard-container" class="hidden">
             <div id="postcard-wrapper">
                 <div id="postcard">
+                    
+                    <button class="postcard-close-x" onclick="returnToMain()">X</button>
+
                     <div class="postcard-left">
                         <h2 style="color: #4a90e2; margin-top:0;">Hello <span id="display-name"></span>,</h2>
                         <p>Congratulations on getting the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
@@ -288,8 +312,7 @@
                     </div>
                 </div>
 
-                <button class="postcard-return-btn" onclick="returnToMain()">Return</button>
-            </div>
+                </div>
         </div>
     </div>
 
@@ -408,7 +431,6 @@
         }
 
         function returnToMain() {
-            /* Stops music if it's playing when returning to main gate */
             const audio = document.getElementById('confession-audio');
             if (audio) {
                 audio.pause();
