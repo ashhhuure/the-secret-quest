@@ -78,7 +78,6 @@
         button:hover { background: #e0f4ff; }
         .hidden { display: none !important; }
 
-        /* POPUP STYLES */
         .popup-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -125,8 +124,12 @@
         }
 
         #postcard {
-            background: #bcd9ea; 
-            border: 1px solid #fff;
+            /* CHANGED TO YOUR CUSTOM JPG HERE */
+            background-image: url('postcard-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            
             padding: 35px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.2);
             width: 750px;
@@ -193,10 +196,8 @@
     </style>
 </head>
 <body onload="focusInput('userNameInput')"> 
-    <!-- Preloading the audio to help it start faster -->
     <audio id="confession-audio" preload="auto" loop>
         <source src="music.mp3" type="audio/mpeg">
-        Your browser does not support the audio element.
     </audio>
 
     <div id="cute-popup" class="popup-overlay hidden">
@@ -333,7 +334,6 @@
             if (id === 'main-page') focusInput('passInput');
             if (id === 'math-game') focusInput('math-answer');
 
-            // Trigger music if we are moving to the postcard
             if (id === 'postcard-container') {
                 playMusic();
             }
@@ -341,17 +341,13 @@
 
         function playMusic() {
             const audio = document.getElementById('confession-audio');
-            // Setting volume to 50% so it's not too loud
             audio.volume = 0.5; 
-            
-            // Re-attempting play in case of block
             const promise = audio.play();
             if (promise !== undefined) {
                 promise.then(_ => {
                     console.log("Music started!");
                 }).catch(error => {
                     console.log("Music failed to autoplay, waiting for interaction.");
-                    // If it fails, we try one more time on any click
                     document.addEventListener('click', () => {
                         audio.play();
                     }, { once: true });
