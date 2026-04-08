@@ -23,7 +23,6 @@
             overflow-x: hidden;
         }
 
-        /* The layer that gets dimmed */
         #ui-layer {
             transition: filter 0.4s ease;
             display: flex;
@@ -119,7 +118,6 @@
         .popup-deco.cats-tr { top: 5px; right: 10px; }
         .popup-deco.cake-bl { bottom: -10px; left: 10px; }
 
-        /* POSTCARD STYLE */
         #postcard-wrapper {
             display: flex;
             justify-content: center;
@@ -140,10 +138,217 @@
         #postcard p { margin-bottom: 20px; font-size: 1rem; color: #333; }
     </style>
 </head>
-<body>
-
-    <audio id="confession-audio" src="music.mp3" loop></audio>
+<body onload="focusInput('userNameInput')"> <audio id="confession-audio" src="music.mp3" loop></audio>
 
     <div id="cute-popup" class="popup-overlay hidden">
         <div class="popup-container">
-            <div class
+            <div class="popup-lace top">vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv</div>
+            <div class="popup-lace bottom">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</div>
+            <div class="popup-deco cats-tr">🐱🐾</div>
+            <div class="popup-deco cake-bl">🍰🍓</div>
+            <h2 id="p-title" style="color:#d14d72; margin-top: 25px;">Notification</h2>
+            <p id="p-msg" style="margin-bottom:20px;"></p>
+            <div id="popup-btns"></div>
+        </div>
+    </div>
+
+    <div id="ui-layer">
+        <div class="cat-deco" style="top:15%; left:10%;">🐱</div>
+        <div class="cat-deco" style="bottom:15%; right:10%;">🐾</div>
+        <div class="cat-deco" style="top:20%; right:15%;">☁️</div>
+
+        <div id="name-page" class="container">
+            <h1>Welcome to Sky</h1>
+            <p>Please enter your name to proceed:</p>
+            <input type="text" id="userNameInput" placeholder="Your Name">
+            <br>
+            <button onclick="saveName()">CONTINUE</button>
+        </div>
+
+        <div id="main-page" class="container hidden">
+            <h1>Welcome to Sky</h1>
+            <input type="text" id="passInput" placeholder="ENTER PASSWORD">
+            <br>
+            <button onclick="checkPassword()">ENTER</button>
+            <br>
+            <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">Need a hint?</p>
+            <button onclick="startRelationshipCheck()">GET PASSWORD</button>
+        </div>
+
+        <div id="rel-check" class="container hidden">
+            <p>Are you currently in a relationship?</p>
+            <button onclick="terminate()">YES</button>
+            <button onclick="startMathGame()">NO</button>
+        </div>
+
+        <div id="math-game" class="container hidden">
+            <div class="score">Score: <span id="scoreVal">0</span>/3</div>
+            <p id="math-question" style="font-size: 1.5rem;"></p>
+            <input type="text" id="math-answer" placeholder="Ans">
+            <br>
+            <button onclick="checkMath()">SUBMIT</button>
+        </div>
+
+        <div id="postcard-container" class="hidden">
+            <div id="postcard-wrapper">
+                <div id="postcard">
+                    <h2 style="color: #4a90e2; margin-top:0;">Hello <span id="display-name"></span>,</h2>
+                    <p>Congratulations on getting the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
+                    <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. There are many attractive guys in college but you were the only that was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. Every time you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during English workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. But all my feelings aside, my goal is to literally just tell you how I feel about you. Sometimes I act a certain way, but I was mostly just confused with how to deal with my feelings towards you.</p>
+                    <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying it before moving on to my next chapter in life. I don't know a lot about you aside of your class, your name and who you hang out with. But I can tell you're a great guy with a really nice personality. Well, I'm also a quiet person so I think quietness on you is an attractive trait. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
+                    <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there was nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I don't mean to disrespect.</p>
+                    <p>Please have a good day or night, whenever you're reading this.</p>
+                    <p style="margin-bottom:0;">With sincerity,<br>Chaya 🐱</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let score = 0;
+        let currentAnswer = 0;
+        let userName = "";
+        let popupCallback = null;
+        const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
+
+        // Utility to automatically focus input boxes
+        function focusInput(id) {
+            setTimeout(() => {
+                const el = document.getElementById(id);
+                if (el) el.focus();
+            }, 50);
+        }
+
+        function openPopup(title, msg, type, callback) {
+            document.getElementById('p-title').innerText = title;
+            document.getElementById('p-msg').innerText = msg;
+            popupCallback = callback;
+            const btns = document.getElementById('popup-btns');
+            
+            if (type === 'ok') {
+                btns.innerHTML = `<button id="p-ok-btn" onclick="closePopup('ok')">OKAY!</button>`;
+                setTimeout(() => document.getElementById('p-ok-btn').focus(), 50); // Focus OK button
+            } else if (type === 'none') {
+                btns.innerHTML = "";
+            } else {
+                btns.innerHTML = `<button onclick="closePopup('yes')">YES</button><button onclick="closePopup('no')">NO</button>`;
+            }
+
+            document.getElementById('cute-popup').classList.remove('hidden');
+            document.getElementById('ui-layer').classList.add('dimmed');
+            setTimeout(() => { document.getElementById('cute-popup').classList.add('active'); }, 10);
+        }
+
+        function closePopup(choice) {
+            document.getElementById('cute-popup').classList.remove('active');
+            document.getElementById('ui-layer').classList.remove('dimmed');
+            
+            setTimeout(() => { 
+                document.getElementById('cute-popup').classList.add('hidden'); 
+                if (popupCallback) { 
+                    popupCallback(choice); 
+                    popupCallback = null; 
+                }
+            }, 200);
+        }
+
+        function showPage(id) {
+            document.getElementById('name-page').classList.add('hidden');
+            document.getElementById('main-page').classList.add('hidden');
+            document.getElementById('rel-check').classList.add('hidden');
+            document.getElementById('math-game').classList.add('hidden');
+            document.getElementById('postcard-container').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
+            
+            // Auto-focus logic for page transitions
+            if (id === 'main-page') focusInput('passInput');
+            if (id === 'math-game') focusInput('math-answer');
+        }
+
+        function saveName() {
+            const input = document.getElementById('userNameInput').value.trim();
+            if(input !== "") {
+                userName = input;
+                document.getElementById('display-name').innerText = userName;
+                showPage('main-page');
+            } else {
+                openPopup("Wait!", "Please enter your name first! 🐱", "ok", () => focusInput('userNameInput'));
+            }
+        }
+
+        function checkPassword() {
+            if(document.getElementById('passInput').value.trim() === "Light") {
+                const audio = document.getElementById('confession-audio');
+                audio.play().catch(e => console.log("Audio deferred"));
+                showPage('postcard-container');
+            } else {
+                openPopup("Incorrect!", "Wrong password... Hint: Use 'Get Password'!", "ok", () => focusInput('passInput'));
+            }
+        }
+
+        function startRelationshipCheck() { showPage('rel-check'); }
+
+        function terminate() {
+            openPopup("Noted!", "Ah, then I wish you a happy relationship. Thank you for talking to me :D", "ok", () => {
+                document.body.innerHTML = `<div class="container" style="z-index:100;"><p>Have a wonderful day! :D</p></div>`;
+            });
+        }
+
+        function startMathGame() {
+            openPopup("Game Start!", "In order to proceed, please answer these correctly!", "ok", () => {
+                score = 0;
+                showPage('math-game');
+                updateMathQuestion();
+            });
+        }
+
+        function updateMathQuestion() {
+            document.getElementById('scoreVal').innerText = score;
+            document.getElementById('math-question').innerText = questions[score].q + " = ?";
+            currentAnswer = questions[score].a;
+            document.getElementById('math-answer').value = "";
+            focusInput('math-answer');
+        }
+
+        function checkMath() {
+            const ans = parseInt(document.getElementById('math-answer').value);
+            if(ans === currentAnswer) {
+                score++;
+                if(score === 3) {
+                    openPopup("Success!", "Excellent! The password is: Light", "ok", () => {
+                        let seconds = 3;
+                        openPopup("Success!", `Returning to main page in ${seconds}...`, "none");
+                        let timer = setInterval(() => {
+                            seconds--;
+                            if (seconds > 0) {
+                                document.getElementById('p-msg').innerText = `Returning to main page in ${seconds}...`;
+                            } else {
+                                clearInterval(timer);
+                                closePopup();
+                                showPage('main-page');
+                            }
+                        }, 1000);
+                    });
+                } else {
+                    updateMathQuestion();
+                }
+            } else {
+                openPopup("Reset!", "Wrong answer! Starting over...", "ok", () => startMathGame());
+            }
+        }
+
+        // Allow "Enter" key to submit
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                if (!document.getElementById('name-page').classList.contains('hidden')) saveName();
+                else if (!document.getElementById('main-page').classList.contains('hidden')) checkPassword();
+                else if (!document.getElementById('math-game').classList.contains('hidden')) checkMath();
+                else if (!document.getElementById('cute-popup').classList.contains('hidden')) {
+                    const okBtn = document.getElementById('p-ok-btn');
+                    if (okBtn) okBtn.click();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
