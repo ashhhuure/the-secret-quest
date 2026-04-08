@@ -7,12 +7,19 @@
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Indie+Flower&display=swap" rel="stylesheet">
     <style>
         :root {
-            --sky-blue: #a3d8f4;
+            /* 2. Changed background to a GIF - Defined as a variable for easy updates */
+            --sky-bg: url('bg.gif'); 
             --pixel-border: #000000;
         }
 
         body {
-            background-color: var(--sky-blue);
+            /* 2. Replaced solid color background with the GIF */
+            background-image: var(--sky-bg);
+            /* Important: Cover and center ensure the gif covers the whole page */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed; /* Keep it fixed while scrolling */
+
             font-family: "Courier New", Courier, monospace;
             font-weight: bold;
             display: flex;
@@ -38,7 +45,7 @@
         .dimmed { filter: brightness(30%); pointer-events: none; }
         
         .container {
-            background: white;
+            background: rgba(255, 255, 255, 0.9); /* Added slight translucency to the boxes so the GIF peeks through */
             border: 6px solid var(--pixel-border);
             box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
             padding: 40px;
@@ -74,7 +81,7 @@
             transition: 0.1s;
         }
 
-        /* 2. HOVER EFFECT ADDED TO BUTTONS */
+        /* HOVER EFFECT ADDED TO BUTTONS */
         button:hover {
             background: #e0f4ff; /* Pale blue hover color */
             border-color: #4a90e2; /* Matching blue border */
@@ -91,11 +98,10 @@
         }
 
         .popup-container {
-            background: white;
+            background: rgba(255, 255, 255, 0.95); /* Translucent popup */
             border: 8px double var(--pixel-border);
             box-shadow: 15px 15px 0px rgba(0,0,0,0.3);
             width: 400px;
-            /* Padding increased to make up for lack of lace */
             padding: 40px 30px; 
             text-align: center;
             position: relative;
@@ -106,24 +112,21 @@
 
         .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
         
-        /* 1. Lace REMOVED from the CSS entirely */
-        /* [REMOVED] .popup-lace ... */
-
-        /* 1. Emoji/Deco CSS REMOVED entirely */
-        /* [REMOVED] .popup-deco ... */
-
         /* POSTCARD LAYOUT STYLES */
         #postcard-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 40px 20px;
-            /* Ensure the absolute return button is relative to this wrapper */
-            position: relative;
+            position: relative; /* Return button is relative to this *now large* container */
+            
+            /* 1. Set full width/height so the button can go 'as far as possible' */
+            width: 100vw;
+            height: 100vh;
         }
 
         #postcard {
-            /* CHANGED TO YOUR CUSTOM JPG HERE */
+            /* Keep postcard background as-is */
             background-image: url('postcard-bg.jpg');
             background-size: cover;
             background-position: center;
@@ -141,7 +144,6 @@
 
         .postcard-left {
             flex: 1.3;
-            /* Scroller closer to divider (Right padding reduced) */
             padding-right: 10px;
             overflow-y: auto; 
             scrollbar-width: thin;
@@ -168,7 +170,6 @@
         .vertical-divider {
             width: 2px;
             background-color: #fff;
-            /* Scroller closer to divider (Left margin reduced) */
             margin-left: 10px; 
             margin-right: 20px;
             height: 100%;
@@ -185,30 +186,29 @@
         .stamp-box {
             width: 65px;
             height: 75px;
-            /* White line REMOVED */
-            /* border: 2px solid #fff; */ 
             margin-bottom: 50px;
         }
 
         .address-line {
             width: 100%;
             height: 2px;
-            /* White line REMOVED */
-            /* background-color: #fff; */ 
             margin-bottom: 25px;
         }
 
-        /* 3. RETURN BUTTON STYLE */
+        /* 1. NEW RETURN BUTTON STYLE - Moved to bottom right corner of screen */
         .postcard-return-btn {
             position: absolute;
-            bottom: 20px; /* Aligned relative to the postcard-wrapper */
-            right: 40px; /* Offset to the right */
-            border-radius: 5px; /* Boxy aesthetic for the small button */
+            /* Anchored to the viewport's edge, away from the postcard */
+            bottom: 20px; 
+            right: 20px; /* Aligned far right with some space */
+            
+            border-radius: 5px; /* Boxy aesthetic */
             padding: 5px 15px; /* Small, rectangular */
             font-size: 0.9rem;
             font-family: "Courier New", Courier, monospace;
-            text-transform: capitalize; /* Ensure 'Return' is capitalized */
-            z-index: 20; /* Keep it above everything */
+            text-transform: capitalize; 
+            z-index: 100; /* Extra high to ensure it floats above everything else */
+            margin: 0; /* Reset margins */
         }
     </style>
 </head>
@@ -314,7 +314,6 @@
             const btns = document.getElementById('popup-btns');
             
             if (type === 'ok') {
-                /* 4. CHANGED 'OKAY!' (all caps) to 'Okay' (capitalized) */
                 btns.innerHTML = `<button id="p-ok-btn" onclick="closePopup('ok')">Okay</button>`;
                 setTimeout(() => document.getElementById('p-ok-btn').focus(), 50);
             } else if (type === 'none') {
@@ -380,7 +379,6 @@
                 document.getElementById('display-name').innerText = userName;
                 showPage('main-page');
             } else {
-                /* (cat emoji left here intentionally as it's a notification popup text, not design decoration) */
                 openPopup("Wait!", "Please enter your name first! 🐱", "ok", () => focusInput('userNameInput'));
             }
         }
@@ -396,7 +394,6 @@
         function startRelationshipCheck() { showPage('rel-check'); }
 
         function terminate() {
-            /* Text changed previously */
             openPopup("Noted!", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
                 document.body.innerHTML = `<div class="container" style="z-index:100;"><p>Have a wonderful day! :D</p></div>`;
             });
@@ -410,7 +407,6 @@
             });
         }
 
-        /* 3. RETURN BUTTON LOGIC */
         function returnToMain() {
             /* Stops music if it's playing when returning to main gate */
             const audio = document.getElementById('confession-audio');
