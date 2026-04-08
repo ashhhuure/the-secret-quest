@@ -36,7 +36,6 @@
         }
 
         .dimmed { filter: brightness(30%); pointer-events: none; }
-
         .cat-deco { position: absolute; font-size: 50px; z-index: 1; user-select: none; }
 
         .container {
@@ -101,7 +100,6 @@
         }
 
         .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
-
         .popup-lace {
             position: absolute;
             font-family: 'VT323', monospace;
@@ -118,6 +116,7 @@
         .popup-deco.cats-tr { top: 5px; right: 10px; }
         .popup-deco.cake-bl { bottom: -10px; left: 10px; }
 
+        /* NEW POSTCARD LAYOUT STYLES */
         #postcard-wrapper {
             display: flex;
             justify-content: center;
@@ -126,19 +125,69 @@
         }
 
         #postcard {
-            background: #fff;
-            border: 1px solid #ddd;
-            padding: 50px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 600px;
-            line-height: 1.8;
+            background: #bcd9ea; /* The blue background from your image */
+            border: 1px solid #fff;
+            padding: 35px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            width: 750px;
+            height: 480px; /* Fixed height to enable scrolling */
+            display: flex;
+            position: relative;
             text-align: left;
+            overflow: hidden; /* Clips the background but allows inner scroll */
+        }
+
+        .postcard-left {
+            flex: 1.3;
+            padding-right: 25px;
+            overflow-y: auto; /* Makes the message scrollable */
+            scrollbar-width: thin;
+            scrollbar-color: #ffffff transparent;
+        }
+
+        /* Scrollbar styling for Chrome/Safari/Edge */
+        .postcard-left::-webkit-scrollbar { width: 5px; }
+        .postcard-left::-webkit-scrollbar-thumb { background: #fff; border-radius: 10px; }
+
+        .postcard-left p {
+            margin-bottom: 18px;
+            font-size: 0.85rem; /* Decreased font size as requested */
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .vertical-divider {
+            width: 2px;
+            background-color: #fff;
+            margin: 0 20px;
+            height: 100%;
+        }
+
+        .postcard-right {
+            flex: 0.7;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
             position: relative;
         }
-        #postcard p { margin-bottom: 20px; font-size: 1rem; color: #333; }
+
+        .stamp-box {
+            width: 65px;
+            height: 75px;
+            border: 2px solid #fff;
+            margin-bottom: 50px;
+        }
+
+        .address-line {
+            width: 100%;
+            height: 2px;
+            background-color: #fff;
+            margin-bottom: 25px;
+        }
     </style>
 </head>
-<body onload="focusInput('userNameInput')"> <audio id="confession-audio" src="music.mp3" loop></audio>
+<body onload="focusInput('userNameInput')"> 
+    <audio id="confession-audio" src="music.mp3" loop></audio>
 
     <div id="cute-popup" class="popup-overlay hidden">
         <div class="popup-container">
@@ -192,13 +241,25 @@
         <div id="postcard-container" class="hidden">
             <div id="postcard-wrapper">
                 <div id="postcard">
-                    <h2 style="color: #4a90e2; margin-top:0;">Hello <span id="display-name"></span>,</h2>
-                    <p>Congratulations on getting the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
-                    <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. There are many attractive guys in college but you were the only that was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. Every time you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during English workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. But all my feelings aside, my goal is to literally just tell you how I feel about you. Sometimes I act a certain way, but I was mostly just confused with how to deal with my feelings towards you.</p>
-                    <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying it before moving on to my next chapter in life. I don't know a lot about you aside of your class, your name and who you hang out with. But I can tell you're a great guy with a really nice personality. Well, I'm also a quiet person so I think quietness on you is an attractive trait. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
-                    <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there was nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I don't mean to disrespect.</p>
-                    <p>Please have a good day or night, whenever you're reading this.</p>
-                    <p style="margin-bottom:0;">With sincerity,<br>Chaya 🐱</p>
+                    <div class="postcard-left">
+                        <h2 style="color: #4a90e2; margin-top:0;">Hello <span id="display-name"></span>,</h2>
+                        <p>Congratulations on getting the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
+                        <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. There are many attractive guys in college but you were the only that was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. Every time you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during English workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. But all my feelings aside, my goal is to literally just tell you how I feel about you. Sometimes I act a certain way, but I was mostly just confused with how to deal with my feelings towards you.</p>
+                        <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying it before moving on to my next chapter in life. I don't know a lot about you aside of your class, your name and who you hang out with. But I can tell you're a great guy with a really nice personality. Well, I'm also a quiet person so I think quietness on you is an attractive trait. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
+                        <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there was nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I don't mean to disrespect.</p>
+                        <p>Please have a good day or night, whenever you're reading this.</p>
+                        <p style="margin-bottom:0;">With sincerity,<br>Chaya 🐱</p>
+                    </div>
+
+                    <div class="vertical-divider"></div>
+
+                    <div class="postcard-right">
+                        <div class="stamp-box"></div>
+                        <div class="address-line"></div>
+                        <div class="address-line"></div>
+                        <div class="address-line"></div>
+                        <div class="address-line" style="width: 60%;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -211,7 +272,6 @@
         let popupCallback = null;
         const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
 
-        // Utility to automatically focus input boxes
         function focusInput(id) {
             setTimeout(() => {
                 const el = document.getElementById(id);
@@ -227,7 +287,7 @@
             
             if (type === 'ok') {
                 btns.innerHTML = `<button id="p-ok-btn" onclick="closePopup('ok')">OKAY!</button>`;
-                setTimeout(() => document.getElementById('p-ok-btn').focus(), 50); // Focus OK button
+                setTimeout(() => document.getElementById('p-ok-btn').focus(), 50);
             } else if (type === 'none') {
                 btns.innerHTML = "";
             } else {
@@ -260,7 +320,6 @@
             document.getElementById('postcard-container').classList.add('hidden');
             document.getElementById(id).classList.remove('hidden');
             
-            // Auto-focus logic for page transitions
             if (id === 'main-page') focusInput('passInput');
             if (id === 'math-game') focusInput('math-answer');
         }
@@ -337,7 +396,6 @@
             }
         }
 
-        // Allow "Enter" key to submit
         document.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 if (!document.getElementById('name-page').classList.contains('hidden')) saveName();
