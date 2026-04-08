@@ -143,7 +143,6 @@
             overflow-y: auto; 
             scrollbar-width: thin;
             scrollbar-color: #ffffff transparent;
-            /* APPLIED NEW HANDWRITTEN FONT HERE */
             font-family: 'Indie Flower', cursive; 
         }
 
@@ -158,7 +157,7 @@
 
         .postcard-left p {
             margin-bottom: 18px;
-            font-size: 1.1rem; /* Slightly larger because handwriting fonts are thinner */
+            font-size: 1.1rem;
             color: #333;
             line-height: 1.4;
         }
@@ -194,7 +193,11 @@
     </style>
 </head>
 <body onload="focusInput('userNameInput')"> 
-    <audio id="confession-audio" src="music.mp3" loop></audio>
+    <!-- Preloading the audio to help it start faster -->
+    <audio id="confession-audio" preload="auto" loop>
+        <source src="music.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+    </audio>
 
     <div id="cute-popup" class="popup-overlay hidden">
         <div class="popup-container">
@@ -329,6 +332,31 @@
             
             if (id === 'main-page') focusInput('passInput');
             if (id === 'math-game') focusInput('math-answer');
+
+            // Trigger music if we are moving to the postcard
+            if (id === 'postcard-container') {
+                playMusic();
+            }
+        }
+
+        function playMusic() {
+            const audio = document.getElementById('confession-audio');
+            // Setting volume to 50% so it's not too loud
+            audio.volume = 0.5; 
+            
+            // Re-attempting play in case of block
+            const promise = audio.play();
+            if (promise !== undefined) {
+                promise.then(_ => {
+                    console.log("Music started!");
+                }).catch(error => {
+                    console.log("Music failed to autoplay, waiting for interaction.");
+                    // If it fails, we try one more time on any click
+                    document.addEventListener('click', () => {
+                        audio.play();
+                    }, { once: true });
+                });
+            }
         }
 
         function saveName() {
@@ -344,8 +372,6 @@
 
         function checkPassword() {
             if(document.getElementById('passInput').value.trim() === "Light") {
-                const audio = document.getElementById('confession-audio');
-                audio.play().catch(e => console.log("Audio deferred"));
                 showPage('postcard-container');
             } else {
                 openPopup("Incorrect!", "Wrong password... Hint: Use 'Get Password'!", "ok", () => focusInput('passInput'));
