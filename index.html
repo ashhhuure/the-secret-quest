@@ -37,9 +37,6 @@
 
         .dimmed { filter: brightness(30%); pointer-events: none; }
         
-        /* 1. Remove all emojis on the blue background (cat face, cat paw, cloud) */
-        /* [REMOVED] .cat-deco { position: absolute; font-size: 50px; z-index: 1; user-select: none; } */
-
         .container {
             background: white;
             border: 6px solid var(--pixel-border);
@@ -77,7 +74,13 @@
             transition: 0.1s;
         }
 
-        button:hover { background: #e0f4ff; }
+        /* 2. HOVER EFFECT ADDED TO BUTTONS */
+        button:hover {
+            background: #e0f4ff; /* Pale blue hover color */
+            border-color: #4a90e2; /* Matching blue border */
+            transform: scale(1.05); /* Slight grow effect */
+        }
+
         .hidden { display: none !important; }
 
         .popup-overlay {
@@ -92,7 +95,8 @@
             border: 8px double var(--pixel-border);
             box-shadow: 15px 15px 0px rgba(0,0,0,0.3);
             width: 400px;
-            padding: 20px 30px 40px 30px;
+            /* Padding increased to make up for lack of lace */
+            padding: 40px 30px; 
             text-align: center;
             position: relative;
             transform: scale(0.9);
@@ -101,21 +105,12 @@
         }
 
         .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
-        .popup-lace {
-            position: absolute;
-            font-family: 'VT323', monospace;
-            font-size: 24px;
-            color: #ffcccc;
-            width: 100%;
-            left: 0;
-            user-select: none;
-        }
-        .popup-lace.top { top: -12px; }
-        .popup-lace.bottom { bottom: -12px; }
+        
+        /* 1. Lace REMOVED from the CSS entirely */
+        /* [REMOVED] .popup-lace ... */
 
-        .popup-deco { position: absolute; font-size: 40px; z-index: 100; }
-        .popup-deco.cats-tr { top: 5px; right: 10px; }
-        .popup-deco.cake-bl { bottom: -10px; left: 10px; }
+        /* 1. Emoji/Deco CSS REMOVED entirely */
+        /* [REMOVED] .popup-deco ... */
 
         /* POSTCARD LAYOUT STYLES */
         #postcard-wrapper {
@@ -123,6 +118,8 @@
             justify-content: center;
             align-items: center;
             padding: 40px 20px;
+            /* Ensure the absolute return button is relative to this wrapper */
+            position: relative;
         }
 
         #postcard {
@@ -144,8 +141,8 @@
 
         .postcard-left {
             flex: 1.3;
-            /* 3. Make the scroller closer to the vertical black line (Right padding reduced) */
-            padding-right: 10px; /* Reduced from 25px */
+            /* Scroller closer to divider (Right padding reduced) */
+            padding-right: 10px;
             overflow-y: auto; 
             scrollbar-width: thin;
             scrollbar-color: #ffffff transparent;
@@ -171,8 +168,8 @@
         .vertical-divider {
             width: 2px;
             background-color: #fff;
-            /* 3. Make the scroller closer to the vertical black line (Move the divider left) */
-            margin-left: 10px; /* Reduced from 20px */
+            /* Scroller closer to divider (Left margin reduced) */
+            margin-left: 10px; 
             margin-right: 20px;
             height: 100%;
         }
@@ -188,17 +185,30 @@
         .stamp-box {
             width: 65px;
             height: 75px;
-            /* 2. Remove all white lines on that postcard */
-            /* border: 2px solid #fff; */ /* COMMENTED OUT */
+            /* White line REMOVED */
+            /* border: 2px solid #fff; */ 
             margin-bottom: 50px;
         }
 
         .address-line {
             width: 100%;
             height: 2px;
-            /* 2. Remove all white lines on that postcard */
-            /* background-color: #fff; */ /* COMMENTED OUT */
+            /* White line REMOVED */
+            /* background-color: #fff; */ 
             margin-bottom: 25px;
+        }
+
+        /* 3. RETURN BUTTON STYLE */
+        .postcard-return-btn {
+            position: absolute;
+            bottom: 20px; /* Aligned relative to the postcard-wrapper */
+            right: 40px; /* Offset to the right */
+            border-radius: 5px; /* Boxy aesthetic for the small button */
+            padding: 5px 15px; /* Small, rectangular */
+            font-size: 0.9rem;
+            font-family: "Courier New", Courier, monospace;
+            text-transform: capitalize; /* Ensure 'Return' is capitalized */
+            z-index: 20; /* Keep it above everything */
         }
     </style>
 </head>
@@ -209,10 +219,6 @@
 
     <div id="cute-popup" class="popup-overlay hidden">
         <div class="popup-container">
-            <div class="popup-lace top">vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv</div>
-            <div class="popup-lace bottom">^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^</div>
-            <div class="popup-deco cats-tr">🐱🐾</div>
-            <div class="popup-deco cake-bl">🍰🍓</div>
             <h2 id="p-title" style="color:#d14d72; margin-top: 25px;">Notification</h2>
             <p id="p-msg" style="margin-bottom:20px;"></p>
             <div id="popup-btns"></div>
@@ -268,7 +274,7 @@
                         <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there was nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I don't mean to disrespect.</p>
                         <p>Please have a good day or night, whenever you're reading this.</p>
                         
-                        <p style="margin-bottom:0;">With sincerity,<br>Chaya</p> /* Cat removed */
+                        <p style="margin-bottom:0;">With sincerity,<br>Chaya</p>
                     </div>
 
                     <div class="vertical-divider"></div>
@@ -281,6 +287,8 @@
                         <div class="address-line" style="width: 60%;"></div>
                     </div>
                 </div>
+
+                <button class="postcard-return-btn" onclick="returnToMain()">Return</button>
             </div>
         </div>
     </div>
@@ -306,7 +314,8 @@
             const btns = document.getElementById('popup-btns');
             
             if (type === 'ok') {
-                btns.innerHTML = `<button id="p-ok-btn" onclick="closePopup('ok')">OKAY!</button>`;
+                /* 4. CHANGED 'OKAY!' (all caps) to 'Okay' (capitalized) */
+                btns.innerHTML = `<button id="p-ok-btn" onclick="closePopup('ok')">Okay</button>`;
                 setTimeout(() => document.getElementById('p-ok-btn').focus(), 50);
             } else if (type === 'none') {
                 btns.innerHTML = "";
@@ -371,6 +380,7 @@
                 document.getElementById('display-name').innerText = userName;
                 showPage('main-page');
             } else {
+                /* (cat emoji left here intentionally as it's a notification popup text, not design decoration) */
                 openPopup("Wait!", "Please enter your name first! 🐱", "ok", () => focusInput('userNameInput'));
             }
         }
@@ -386,7 +396,7 @@
         function startRelationshipCheck() { showPage('rel-check'); }
 
         function terminate() {
-            /* 5. Change "talking to me" to "interacting with me" */
+            /* Text changed previously */
             openPopup("Noted!", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
                 document.body.innerHTML = `<div class="container" style="z-index:100;"><p>Have a wonderful day! :D</p></div>`;
             });
@@ -398,6 +408,17 @@
                 showPage('math-game');
                 updateMathQuestion();
             });
+        }
+
+        /* 3. RETURN BUTTON LOGIC */
+        function returnToMain() {
+            /* Stops music if it's playing when returning to main gate */
+            const audio = document.getElementById('confession-audio');
+            if (audio) {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+            showPage('main-page');
         }
 
         function updateMathQuestion() {
