@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Sky</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Indie+Flower&display=swap" rel="stylesheet">
     <style>
         :root {
             --sky-blue: #a3d8f4;
@@ -116,7 +116,7 @@
         .popup-deco.cats-tr { top: 5px; right: 10px; }
         .popup-deco.cake-bl { bottom: -10px; left: 10px; }
 
-        /* NEW POSTCARD LAYOUT STYLES */
+        /* POSTCARD LAYOUT STYLES */
         #postcard-wrapper {
             display: flex;
             justify-content: center;
@@ -125,35 +125,42 @@
         }
 
         #postcard {
-            background: #bcd9ea; /* The blue background from your image */
+            background: #bcd9ea; 
             border: 1px solid #fff;
             padding: 35px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.2);
             width: 750px;
-            height: 480px; /* Fixed height to enable scrolling */
+            height: 480px; 
             display: flex;
             position: relative;
             text-align: left;
-            overflow: hidden; /* Clips the background but allows inner scroll */
+            overflow: hidden; 
         }
 
         .postcard-left {
             flex: 1.3;
             padding-right: 25px;
-            overflow-y: auto; /* Makes the message scrollable */
+            overflow-y: auto; 
             scrollbar-width: thin;
             scrollbar-color: #ffffff transparent;
+            /* APPLIED NEW HANDWRITTEN FONT HERE */
+            font-family: 'Indie Flower', cursive; 
         }
 
-        /* Scrollbar styling for Chrome/Safari/Edge */
         .postcard-left::-webkit-scrollbar { width: 5px; }
         .postcard-left::-webkit-scrollbar-thumb { background: #fff; border-radius: 10px; }
 
+        .postcard-left h2 {
+            font-family: 'Indie Flower', cursive;
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
         .postcard-left p {
             margin-bottom: 18px;
-            font-size: 0.85rem; /* Decreased font size as requested */
+            font-size: 1.1rem; /* Slightly larger because handwriting fonts are thinner */
             color: #333;
-            line-height: 1.6;
+            line-height: 1.4;
         }
 
         .vertical-divider {
