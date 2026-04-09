@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Bluebell Mailbox</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Indie+Flower&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Indie+Flower&family=Inter:wght@300&display=swap" rel="stylesheet">
     <style>
         :root {
             --sky-bg: url('bg.gif'); 
@@ -20,7 +20,6 @@
 
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 10px; }
-        ::-webkit-scrollbar-track { background: transparent; }
 
         body {
             background-image: var(--sky-bg);
@@ -37,6 +36,34 @@
             margin: 0;
             padding: 20px;
             box-sizing: border-box;
+        }
+
+        /* INTRO SCREEN WITH FADE EFFECT */
+        #intro-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(50, 50, 50, 1); /* Full grey background */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            transition: opacity 1s ease; /* The fade effect */
+            opacity: 1;
+        }
+
+        #intro-screen img {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        #intro-screen p {
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            font-weight: 300;
         }
 
         #ui-layer {
@@ -65,7 +92,21 @@
             margin: 20px auto;
         }
 
-        h1 { font-size: 1.5rem; margin-top: 0; color: #4a90e2; text-transform: uppercase; }
+        /* FONT SIZE FIX FOR ONE-LINE HEADER */
+        h1 { 
+            font-size: 1.2rem; 
+            margin-top: 0; 
+            color: #4a90e2; 
+            text-transform: uppercase;
+            white-space: nowrap; 
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        @media (max-width: 400px) {
+            h1 { font-size: 1.05rem; }
+        }
+
         .score { position: absolute; top: 10px; right: 10px; font-size: 0.9rem; color: #d14d72; }
 
         input[type="text"] {
@@ -150,49 +191,22 @@
             box-sizing: border-box;
         }
 
-        /* 3. MOBILE RESPONSIVENESS FIX */
         @media (max-width: 768px) and (orientation: portrait) {
-            #postcard-wrapper { padding: 0; }
             #postcard {
-                transform: rotate(0deg); /* Keeps it readable but shrinks to fit screen */
                 flex-direction: column;
                 max-width: 95vw;
                 height: auto;
                 padding: 50px 15px 20px 15px;
             }
-            .vertical-divider {
-                width: 100% !important;
-                height: 2px !important;
-                margin: 20px 0 !important;
-            }
-            .postcard-right { align-items: center !important; }
+            .vertical-divider { width: 100% !important; height: 2px !important; margin: 20px 0 !important; }
             .postcard-left { max-height: 300px; overflow-y: auto; }
         }
 
-        .postcard-left {
-            flex: 1.3;
-            padding-right: 10px;
-            font-family: 'Indie Flower', cursive; 
-        }
-
+        .postcard-left { flex: 1.3; padding-right: 10px; font-family: 'Indie Flower', cursive; }
         .postcard-left h2 { font-size: 1.5rem; margin-top: 0; }
         .postcard-left p { font-size: 1rem; line-height: 1.4; }
-
-        .vertical-divider {
-            width: 2px;
-            background-color: #fff;
-            margin: 0 15px;
-            height: 100%;
-        }
-
-        .postcard-right {
-            flex: 0.7;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            position: relative;
-        }
-
+        .vertical-divider { width: 2px; background-color: #fff; margin: 0 15px; height: 100%; }
+        .postcard-right { flex: 0.7; display: flex; flex-direction: column; align-items: flex-end; position: relative; }
         .stamp-box { width: 55px; height: 65px; margin-bottom: 30px; }
         .address-line { width: 100%; height: 2px; margin-bottom: 20px; }
 
@@ -216,7 +230,13 @@
         }
     </style>
 </head>
-<body onload="focusInput('userNameInput')"> 
+<body onload="startIntro()">
+
+    <div id="intro-screen">
+        <img src="headphone.png" alt="Headphones">
+        <p>USE HEADPHONES FOR THE BEST EXPERIENCE</p>
+    </div>
+
     <audio id="confession-audio" preload="auto" loop>
         <source src="music.mp3" type="audio/mpeg">
     </audio>
@@ -230,7 +250,7 @@
     </div>
 
     <div id="ui-layer">
-        <div id="name-page" class="container">
+        <div id="name-page" class="container hidden">
             <h1>Welcome to Bluebell Mailbox</h1>
             <p>Please enter your name:</p>
             <input type="text" id="userNameInput" placeholder="Your Name" onkeydown="if(event.key==='Enter') saveName()">
@@ -292,6 +312,18 @@
         let popupCallback = null;
         const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
 
+        // INTRO FADE LOGIC
+        function startIntro() {
+            setTimeout(() => {
+                const intro = document.getElementById('intro-screen');
+                intro.style.opacity = '0';
+                setTimeout(() => {
+                    intro.style.display = 'none';
+                    showPage('name-page');
+                }, 1000); // 1s for fade animation
+            }, 3000); // 3s message duration
+        }
+
         function focusInput(id) {
             setTimeout(() => {
                 const el = document.getElementById(id);
@@ -327,8 +359,12 @@
 
         function showPage(id) {
             const ids = ['name-page', 'main-page', 'rel-check', 'math-game', 'postcard-container'];
-            ids.forEach(pg => document.getElementById(pg).classList.add('hidden'));
+            ids.forEach(pg => {
+                const el = document.getElementById(pg);
+                if(el) el.classList.add('hidden');
+            });
             document.getElementById(id).classList.remove('hidden');
+            if (id === 'name-page') focusInput('userNameInput');
             if (id === 'main-page') focusInput('passInput');
             if (id === 'math-game') focusInput('math-answer');
             if (id === 'postcard-container') playMusic();
@@ -363,22 +399,18 @@
 
         function startRelationshipCheck() { showPage('rel-check'); }
 
-        // EXTRA DEMAND: Countdown Logic
+        // EXIT PAGE WITH X BUTTON
         function terminate() {
-            let timer = 3;
-            openPopup("Noted!", "Returning to main page in " + timer + "...", "none");
-            
-            const interval = setInterval(() => {
-                timer--;
-                document.getElementById('p-msg').innerText = "Returning to main page in " + timer + "...";
-                if (timer <= 0) {
-                    clearInterval(interval);
-                    closePopup();
-                    document.body.innerHTML = `<div class="container" style="z-index:100; margin-top: 40vh;"><p>Have a wonderful day! :D</p></div>`;
-                }
-            }, 1000);
+            openPopup("Noted!", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
+                document.body.innerHTML = `
+                    <div class="container" style="z-index:100; margin-top: 40vh;">
+                        <button class="postcard-close-x" onclick="location.reload()">X</button>
+                        <p>Have a wonderful day! :D</p>
+                    </div>`;
+            });
         }
 
+        // COUNTDOWN FOR CLOSING POSTCARD
         function returnToMainWithCountdown() {
             const audio = document.getElementById('confession-audio');
             if (audio) { audio.pause(); audio.currentTime = 0; }
@@ -418,7 +450,18 @@
             if(ans === currentAnswer) {
                 score++;
                 if(score === 3) {
-                    openPopup("Success!", "The password is: Light", "ok", () => showPage('main-page'));
+                    // SUCCESS COUNTDOWN
+                    let timer = 3;
+                    openPopup("Success!", "The password is: Light\n\nReturning to main page in " + timer + "...", "none");
+                    const interval = setInterval(() => {
+                        timer--;
+                        document.getElementById('p-msg').innerText = "The password is: Light\n\nReturning to main page in " + timer + "...";
+                        if(timer <= 0) {
+                            clearInterval(interval);
+                            closePopup();
+                            showPage('main-page');
+                        }
+                    }, 1000);
                 } else {
                     updateMathQuestion();
                 }
