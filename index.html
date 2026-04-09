@@ -11,15 +11,13 @@
             --pixel-border: #000000;
         }
 
-        /* 1. ENABLE GLOBAL SCROLLING & STYLE SCROLLBARS */
         html, body {
-            overflow-x: auto; /* Allows horizontal scroll as backup */
-            overflow-y: auto; /* Allows vertical scroll as backup */
+            overflow-x: auto;
+            overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #ffffff transparent;
         }
 
-        /* Custom Scrollbar for Chrome/Safari */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 10px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -30,7 +28,6 @@
             background-position: center;
             background-attachment: fixed;
             background-repeat: no-repeat;
-            
             font-family: "Courier New", Courier, monospace;
             font-weight: bold;
             display: flex;
@@ -38,7 +35,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px; /* Space around edges on mobile */
+            padding: 20px;
             box-sizing: border-box;
         }
 
@@ -49,7 +46,7 @@
             align-items: center;
             width: 100%;
             min-height: 100vh;
-            position: relative; /* Changed from fixed to allow page scrolling */
+            position: relative;
             z-index: 5;
         }
 
@@ -62,7 +59,7 @@
             padding: 30px 20px;
             text-align: center;
             width: 90%;
-            max-width: 380px; /* Shrinks on small screens */
+            max-width: 380px;
             position: relative;
             z-index: 10;
             margin: 20px auto;
@@ -103,7 +100,6 @@
 
         .hidden { display: none !important; }
 
-        /* POPUP FIXES */
         .popup-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -128,7 +124,6 @@
 
         .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
         
-        /* 2. POSTCARD MOBILE RESPONSIVENESS */
         #postcard-wrapper {
             display: flex;
             justify-content: center;
@@ -146,40 +141,37 @@
             padding: 25px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
             width: 100%;
-            max-width: 750px; /* Desktop width */
-            height: auto;
+            max-width: 750px;
             min-height: 480px;
             display: flex;
-            flex-direction: row; /* Default side-by-side */
+            flex-direction: row;
             position: relative;
             text-align: left;
             box-sizing: border-box;
         }
 
-        /* Stack vertically on very small mobile phones */
-        @media (max-width: 600px) {
+        /* 3. MOBILE RESPONSIVENESS FIX */
+        @media (max-width: 768px) and (orientation: portrait) {
+            #postcard-wrapper { padding: 0; }
             #postcard {
+                transform: rotate(0deg); /* Keeps it readable but shrinks to fit screen */
                 flex-direction: column;
+                max-width: 95vw;
                 height: auto;
-                padding: 40px 15px 20px 15px; /* Extra top padding for X button */
+                padding: 50px 15px 20px 15px;
             }
             .vertical-divider {
                 width: 100% !important;
                 height: 2px !important;
                 margin: 20px 0 !important;
             }
-            .postcard-right {
-                align-items: center !important;
-            }
+            .postcard-right { align-items: center !important; }
+            .postcard-left { max-height: 300px; overflow-y: auto; }
         }
 
         .postcard-left {
             flex: 1.3;
             padding-right: 10px;
-            max-height: 400px;
-            overflow-y: auto; 
-            scrollbar-width: thin;
-            scrollbar-color: #ffffff transparent;
             font-family: 'Indie Flower', cursive; 
         }
 
@@ -204,7 +196,6 @@
         .stamp-box { width: 55px; height: 65px; margin-bottom: 30px; }
         .address-line { width: 100%; height: 2px; margin-bottom: 20px; }
 
-        /* PIXELATED X BUTTON */
         .postcard-close-x {
             position: absolute;
             top: 15px;
@@ -240,16 +231,16 @@
 
     <div id="ui-layer">
         <div id="name-page" class="container">
-            <h1>Welcome to Sky</h1>
+            <h1>Welcome to Bluebell Mailbox</h1>
             <p>Please enter your name:</p>
-            <input type="text" id="userNameInput" placeholder="Your Name">
+            <input type="text" id="userNameInput" placeholder="Your Name" onkeydown="if(event.key==='Enter') saveName()">
             <p style="font-size: 0.75rem; color: #666; font-style: italic;">(Short name for signature)</p>
             <button onclick="saveName()">CONTINUE</button>
         </div>
 
         <div id="main-page" class="container hidden">
-            <h1>Welcome to Sky</h1>
-            <input type="text" id="passInput" placeholder="ENTER PASSWORD">
+            <h1>Welcome to Bluebell Mailbox</h1>
+            <input type="text" id="passInput" placeholder="ENTER PASSWORD" onkeydown="if(event.key==='Enter') checkPassword()">
             <button onclick="checkPassword()">ENTER</button>
             <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">Need a hint?</p>
             <button onclick="startRelationshipCheck()">GET PASSWORD</button>
@@ -264,14 +255,14 @@
         <div id="math-game" class="container hidden">
             <div class="score">Score: <span id="scoreVal">0</span>/3</div>
             <p id="math-question" style="font-size: 1.3rem;"></p>
-            <input type="text" id="math-answer" placeholder="Ans">
+            <input type="text" id="math-answer" placeholder="Ans" onkeydown="if(event.key==='Enter') checkMath()">
             <button onclick="checkMath()">SUBMIT</button>
         </div>
 
         <div id="postcard-container" class="hidden">
             <div id="postcard-wrapper">
                 <div id="postcard">
-                    <button class="postcard-close-x" onclick="returnToMain()">X</button>
+                    <button class="postcard-close-x" onclick="returnToMainWithCountdown()">X</button>
                     <div class="postcard-left">
                         <h2 style="color: #4a90e2;">Hello <span id="display-name"></span>,</h2>
                         <p>Congratulations on getting the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
@@ -295,7 +286,6 @@
     </div>
 
     <script>
-        // ... (All JS remains the same as your previous version)
         let score = 0;
         let currentAnswer = 0;
         let userName = "";
@@ -373,10 +363,38 @@
 
         function startRelationshipCheck() { showPage('rel-check'); }
 
+        // EXTRA DEMAND: Countdown Logic
         function terminate() {
-            openPopup("Noted!", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
-                document.body.innerHTML = `<div class="container" style="z-index:100; margin-top: 40vh;"><p>Have a wonderful day! :D</p></div>`;
-            });
+            let timer = 3;
+            openPopup("Noted!", "Returning to main page in " + timer + "...", "none");
+            
+            const interval = setInterval(() => {
+                timer--;
+                document.getElementById('p-msg').innerText = "Returning to main page in " + timer + "...";
+                if (timer <= 0) {
+                    clearInterval(interval);
+                    closePopup();
+                    document.body.innerHTML = `<div class="container" style="z-index:100; margin-top: 40vh;"><p>Have a wonderful day! :D</p></div>`;
+                }
+            }, 1000);
+        }
+
+        function returnToMainWithCountdown() {
+            const audio = document.getElementById('confession-audio');
+            if (audio) { audio.pause(); audio.currentTime = 0; }
+            
+            let timer = 3;
+            openPopup("Closing", "Returning to main page in " + timer + "...", "none");
+
+            const interval = setInterval(() => {
+                timer--;
+                document.getElementById('p-msg').innerText = "Returning to main page in " + timer + "...";
+                if (timer <= 0) {
+                    clearInterval(interval);
+                    closePopup();
+                    showPage('main-page');
+                }
+            }, 1000);
         }
 
         function startMathGame() {
@@ -385,12 +403,6 @@
                 showPage('math-game');
                 updateMathQuestion();
             });
-        }
-
-        function returnToMain() {
-            const audio = document.getElementById('confession-audio');
-            if (audio) { audio.pause(); audio.currentTime = 0; }
-            showPage('main-page');
         }
 
         function updateMathQuestion() {
