@@ -219,6 +219,7 @@
             transform: rotateY(180deg);
         }
 
+        /* Slow Flicker/Breathe Logic */
         .flip-hint {
             font-family: 'Inter', sans-serif;
             font-style: italic;
@@ -227,6 +228,17 @@
             margin-top: 20px;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             pointer-events: none;
+            opacity: 0; /* Start hidden for delay */
+        }
+
+        .breathe-animation {
+            animation: breathe 3s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
         }
 
         .postcard-left { 
@@ -342,6 +354,7 @@
         let popupCallback = null;
         let touchstartX = 0;
         let touchendX = 0;
+        let promptTimer = null; // To track the 30s delay
         const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
 
         const card = document.getElementById('postcard');
@@ -363,7 +376,7 @@
         });
 
         function startIntro() {
-            updatePrompt();
+            updatePromptText();
             setTimeout(() => {
                 document.getElementById('intro-screen').style.opacity = '0';
                 showPage('name-page');
@@ -373,7 +386,7 @@
             }, 3000); 
         }
 
-        function updatePrompt() {
+        function updatePromptText() {
             if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
                 promptText.innerText = "Swipe left to inspect the postcard";
             } else {
@@ -450,11 +463,21 @@
             const ids = ['name-page', 'main-page', 'rel-check', 'math-game', 'postcard-container'];
             ids.forEach(pg => { document.getElementById(pg).classList.add('hidden'); });
             document.getElementById(id).classList.remove('hidden');
+            
             if (id === 'name-page') focusInput('userNameInput');
             if (id === 'main-page') focusInput('passInput');
             if (id === 'math-game') focusInput('math-answer');
             if (id === 'postcard-container') {
                 fadeAudioOut(document.getElementById('bg-audio'), () => fadeAudioIn(document.getElementById('confession-audio')));
+                
+                // Prompt Timing Logic
+                clearTimeout(promptTimer);
+                promptText.classList.remove('breathe-animation');
+                promptText.style.opacity = "0";
+
+                promptTimer = setTimeout(() => {
+                    promptText.classList.add('breathe-animation');
+                }, 30000); // 30 seconds
             }
         }
 
@@ -479,6 +502,7 @@
         }
 
         function returnToMainWithCountdown() {
+            clearTimeout(promptTimer);
             fadeAudioOut(document.getElementById('confession-audio'), () => {
                 showPage('main-page');
                 fadeAudioIn(document.getElementById('bg-audio'));
