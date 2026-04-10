@@ -408,9 +408,10 @@
         });
 
         card.addEventListener('touchstart', (e) => {
+            e.preventDefault();
             const touch = e.touches[0];
             checkInteraction(touch.clientX, touch.clientY);
-        }, {passive: true});
+        }, {passive: false});
 
 
         function fadeAudioIn(audio) {
