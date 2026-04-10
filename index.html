@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Welcome to Bluebell Mailbox</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Indie+Flower&family=Inter:wght@300&display=swap" rel="stylesheet">
     <style>
@@ -13,7 +13,7 @@
         }
 
         html, body {
-            overflow-x: hidden;
+            overflow-x: auto;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
@@ -121,7 +121,6 @@
 
         .hidden { display: none !important; }
 
-        /* Popups */
         .popup-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -146,10 +145,11 @@
         
         #postcard-container {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
-            width: 100%;
-            height: 100%;
+            width: auto;
+            min-width: 100%;
+            padding: 20px;
         }
 
         #postcard {
@@ -160,18 +160,11 @@
             width: 750px; 
             height: 480px; 
             display: flex !important;
-            flex-direction: row !important; /* Horizontal locked */
+            flex-direction: row !important;
             position: relative;
             box-sizing: border-box;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-        }
-
-        /* Mobile specific scaling to prevent vertical stacking */
-        @media (max-width: 768px) {
-            #postcard { transform: scale(0.48); transform-origin: center center; }
-        }
-        @media (max-width: 480px) {
-            #postcard { transform: scale(0.4); }
+            flex-shrink: 0;
         }
 
         .postcard-left { 
@@ -202,7 +195,7 @@
             font-size: 1.6rem;
             cursor: pointer;
             z-index: 110;
-            border-radius: 0; /* Forced Square */
+            border-radius: 0;
         }
     </style>
 </head>
@@ -210,7 +203,7 @@
 
     <div id="intro-screen">
         <img src="headphone.png" alt="Earphones">
-        <p>USE EARPHONES FOR THE IMMERSIVE EXPERIENCE</p>
+        <p>Use earphones for immersive experience</p>
     </div>
 
     <audio id="confession-audio" preload="auto" loop><source src="music.mp3" type="audio/mpeg"></audio>
@@ -260,10 +253,10 @@
                 <button class="postcard-close-x" onclick="returnToMainWithCountdown()">X</button>
                 <div class="postcard-left">
                     <h2 style="color: #4a90e2; margin-top: 0;">Hello <span id="display-name"></span>,</h2>
-                    <p>Congratulations on getting the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
-                    <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. There are many attractive guys in college but you were the only that was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. Every time you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during English workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. But all my feelings aside, my goal is to literally just tell you how I feel about you. Sometimes I act a certain way, but I was mostly just confused with how to deal with my feelings towards you.</p>
-                    <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying it before moving on to my next chapter in life. I don't know a lot about you aside of your class, your name and who you hang out with. But I can tell you're a great guy with a really nice personality. Well, I'm also a quiet person so I think quietness on you is an attractive trait. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
-                    <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there was nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I don't mean to disrespect.</p>
+                    <p>You got the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
+                    <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. It’s the first time in my life I’ve ever met someone who was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. When you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during muet speaking workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. I wish to hear your voice more. But all my feelings aside, my goal is literally to just tell you how I feel about you. Sometimes I act a certain way, but it’s simply because I’m too shy and embarrassed.</p>
+                    <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying anything before leaving college. I don't know a lot about you aside from your class, your name and who you hang out with. I can ask around but I’m too scared of people knowing my crush towards you. But I can tell you're a great guy with a nice personality. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
+                    <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there is nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I never mean to disrespect.</p>
                     <p>Please have a good day or night, whenever you're reading this.</p>
                     <p style="margin-bottom:0;">With sincerity,<br>Chaya</p>
                 </div>
@@ -280,7 +273,7 @@
         let popupCallback = null;
         const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
 
-        // Audio Triggers
+        // SFX Logic
         document.addEventListener('click', (e) => {
             if (e.target.tagName === 'BUTTON') {
                 const sfx = document.getElementById('click-sfx');
@@ -288,8 +281,9 @@
             }
         });
 
+        // Bloop only triggers if a mouse is used (Pointer: fine)
         document.addEventListener('mouseover', (e) => {
-            if (e.target.tagName === 'BUTTON') {
+            if (e.target.tagName === 'BUTTON' && window.matchMedia('(pointer: fine)').matches) {
                 const sfx = document.getElementById('hover-sfx');
                 sfx.currentTime = 0; sfx.play().catch(()=>{});
             }
