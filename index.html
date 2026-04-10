@@ -497,6 +497,8 @@
 
         function returnToMainWithCountdown() {
             clearTimeout(promptTimer);
+            const sfx = document.getElementById('click-sfx');
+sfx.currentTime = 0; sfx.play().catch(()=>{});
             fadeAudioOut(document.getElementById('confession-audio'), () => {
                 showPage('main-page');
                 fadeAudioIn(document.getElementById('bg-audio'));
