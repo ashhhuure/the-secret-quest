@@ -55,7 +55,13 @@
         }
 
         #intro-screen img { width: 80px; margin-bottom: 20px; }
-        #intro-screen p { font-size: 1.1rem; letter-spacing: 1px; font-weight: 300; }
+        #intro-screen p { 
+            font-size: 1.1rem; 
+            letter-spacing: 1px; 
+            font-weight: 300; 
+            max-width: 250px; /* Forces two lines on mobile */
+            line-height: 1.4;
+        }
 
         #ui-layer {
             transition: filter 0.4s ease, opacity 1.5s ease;
@@ -84,6 +90,11 @@
             z-index: 10;
         }
 
+        /* Mobile specific container adjustment */
+        @media (max-width: 480px) {
+            .container { width: 80% !important; }
+        }
+
         h1 { 
             font-family: var(--pixel-font);
             font-size: 2.2rem; 
@@ -92,8 +103,6 @@
             text-transform: uppercase;
             line-height: 1.1;
         }
-
-        @media (max-width: 400px) { h1 { font-size: 1.8rem; } }
 
         .score { position: absolute; top: 10px; right: 10px; font-size: 0.9rem; color: #d14d72; }
 
@@ -132,8 +141,8 @@
 
         .popup-container {
             background: rgba(255, 255, 255, 0.95);
-            border: 6px double var(--pixel-border);
-            width: 100%;
+            border: 6px solid var(--pixel-border); /* Thick border applied */
+            width: 90%;
             max-width: 350px;
             padding: 30px 20px; 
             text-align: center;
@@ -161,7 +170,7 @@
             width: 750px; 
             height: 480px; 
             display: flex !important;
-            flex-direction: row !important; /* Horizontal locked */
+            flex-direction: row !important;
             position: relative;
             box-sizing: border-box;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -207,7 +216,7 @@
 
     <div id="intro-screen">
         <img src="headphone.png" alt="Earphones">
-        <p>Use earphones for immersive experience</p>
+        <p>Use earphones for <br> immersive experience</p>
     </div>
 
     <audio id="confession-audio" preload="auto" loop><source src="music.mp3" type="audio/mpeg"></audio>
@@ -217,8 +226,7 @@
 
     <div id="cute-popup" class="popup-overlay hidden">
         <div class="popup-container">
-            <h2 id="p-title" style="color:#d14d72; margin-top: 25px;">Notification</h2>
-            <p id="p-msg" style="margin-bottom:20px; white-space: pre-wrap;"></p>
+            <h2 id="p-title" style="display:none;"></h2> <p id="p-msg" style="margin-top:10px; margin-bottom:20px; white-space: pre-wrap;"></p>
             <div id="popup-btns"></div>
         </div>
     </div>
@@ -371,7 +379,7 @@
 
         function terminate() {
             document.getElementById('rel-check').classList.add('hidden');
-            openPopup("Noted!", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
+            openPopup("", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
                 document.getElementById('ui-layer').innerHTML = `
                     <div class="container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin:0;">
                         <button class="postcard-close-x" onclick="location.reload()">X</button>
