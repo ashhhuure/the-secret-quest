@@ -13,12 +13,14 @@
         }
 
         html, body {
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
         }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 10px; }
 
         body {
             background-image: var(--sky-bg);
@@ -32,9 +34,11 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
         }
 
-        /* Intro Screen Overlay */
         #intro-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -51,16 +55,15 @@
         }
 
         #intro-screen img { width: 80px; margin-bottom: 20px; }
-        #intro-screen p { font-size: 1rem; letter-spacing: 1px; font-weight: 300; }
+        #intro-screen p { font-size: 1.1rem; letter-spacing: 1px; font-weight: 300; }
 
-        /* Main UI Layer */
         #ui-layer {
             transition: filter 0.4s ease, opacity 1.5s ease;
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
             position: relative;
             z-index: 5;
             opacity: 0; 
@@ -70,12 +73,12 @@
         .dimmed { filter: brightness(30%); pointer-events: none; }
         
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border: 5px solid var(--pixel-border);
-            box-shadow: 8px 8px 0px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.9);
+            border: 6px solid var(--pixel-border);
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
             padding: 30px 20px;
             text-align: center;
-            width: 90%;
+            width: 95%;
             max-width: 380px;
             position: relative;
             z-index: 10;
@@ -112,13 +115,8 @@
             font-size: 0.9rem;
             cursor: pointer;
             margin: 5px;
-            border-radius: 12px;
+            border-radius: 15px;
             transition: 0.1s;
-        }
-
-        button:hover {
-            background: #e0f4ff;
-            border-color: #4a90e2;
         }
 
         .hidden { display: none !important; }
@@ -132,9 +130,9 @@
         }
 
         .popup-container {
-            background: rgba(255, 255, 255, 0.98);
-            border: 5px solid var(--pixel-border);
-            width: 90%;
+            background: rgba(255, 255, 255, 0.95);
+            border: 6px double var(--pixel-border);
+            width: 100%;
             max-width: 350px;
             padding: 30px 20px; 
             text-align: center;
@@ -146,13 +144,12 @@
 
         .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
         
-        /* Postcard Styles */
-        #postcard-wrapper {
+        #postcard-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
         }
 
         #postcard {
@@ -160,19 +157,19 @@
             background-size: cover;
             background-position: center;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             width: 750px; 
             height: 480px; 
-            display: flex;
-            flex-direction: row; 
+            display: flex !important;
+            flex-direction: row !important; /* Horizontal locked */
             position: relative;
             box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
+        /* Mobile specific scaling to prevent vertical stacking */
         @media (max-width: 768px) {
             #postcard { transform: scale(0.48); transform-origin: center center; }
         }
-
         @media (max-width: 480px) {
             #postcard { transform: scale(0.4); }
         }
@@ -186,18 +183,9 @@
             text-align: left;
         }
 
-        .vertical-divider { width: 2px; background-color: rgba(255,255,255,0.4); margin: 0 15px; height: 100%; }
+        .vertical-divider { width: 2px; background-color: rgba(255,255,255,0.5); margin: 0 15px; height: 100%; }
         
-        .postcard-right { 
-            flex: 0.7; 
-            display: flex; 
-            flex-direction: column; 
-            align-items: flex-end; 
-            position: relative; 
-        }
-
-        .stamp-box { width: 60px; height: 70px; border: 2px dashed rgba(0,0,0,0.2); margin-bottom: 40px; }
-        .address-line { width: 100%; height: 2px; background: rgba(0,0,0,0.1); margin-bottom: 25px; }
+        .postcard-right { flex: 0.7; position: relative; }
 
         .postcard-close-x {
             position: absolute;
@@ -206,15 +194,15 @@
             width: 32px;
             height: 32px;
             background-color: white;
-            border: 3px solid #000;
+            border: 2px solid #000;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: var(--pixel-font);
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             cursor: pointer;
             z-index: 110;
-            border-radius: 0; /* Square box */
+            border-radius: 0; /* Forced Square */
         }
     </style>
 </head>
@@ -228,11 +216,12 @@
     <audio id="confession-audio" preload="auto" loop><source src="music.mp3" type="audio/mpeg"></audio>
     <audio id="bg-audio" preload="auto" loop><source src="background.mp3" type="audio/mpeg"></audio>
     <audio id="click-sfx"><source src="click.mp3" type="audio/mpeg"></audio>
+    <audio id="hover-sfx"><source src="bloop.mp3" type="audio/mpeg"></audio>
 
     <div id="cute-popup" class="popup-overlay hidden">
         <div class="popup-container">
-            <h2 id="p-title" style="color:#d14d72; margin-top: 15px; font-family: var(--pixel-font);">Notification</h2>
-            <p id="p-msg" style="margin-bottom:20px; white-space: pre-wrap; font-size: 0.95rem;"></p>
+            <h2 id="p-title" style="color:#d14d72; margin-top: 25px;">Notification</h2>
+            <p id="p-msg" style="margin-bottom:20px; white-space: pre-wrap;"></p>
             <div id="popup-btns"></div>
         </div>
     </div>
@@ -247,7 +236,7 @@
         </div>
 
         <div id="main-page" class="container hidden">
-            <input type="text" id="passInput" placeholder="ENTER PASSWORD" onkeydown="if(event.key==='Enter') checkPassword()" style="margin-top:20px;">
+            <input type="text" id="passInput" placeholder="ENTER PASSWORD" onkeydown="if(event.key==='Enter') checkPassword()">
             <button onclick="checkPassword()">ENTER</button>
             <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">Need a hint?</p>
             <button onclick="startRelationshipCheck()">GET PASSWORD</button>
@@ -267,27 +256,19 @@
         </div>
 
         <div id="postcard-container" class="hidden">
-            <div id="postcard-wrapper">
-                <div id="postcard">
-                    <button class="postcard-close-x" onclick="returnToMainWithCountdown()">X</button>
-                    <div class="postcard-left">
-                        <h2 style="color: #4a90e2; margin-top:0;">Hello <span id="display-name"></span>,</h2>
-                        <p>Congratulations on getting the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
-                        <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. There are many attractive guys in college but you were the only that was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. Every time you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during English workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. But all my feelings aside, my goal is to literally just tell you how I feel about you. Sometimes I act a certain way, but I was mostly just confused with how to deal with my feelings towards you.</p>
-                        <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying it before moving on to my next chapter in life. I don't know a lot about you aside of your class, your name and who you hang out with. But I can tell you're a great guy with a really nice personality. Well, I'm also a quiet person so I think quietness on you is an attractive trait. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
-                        <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there was nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I don't mean to disrespect.</p>
-                        <p>Please have a good day or night, whenever you're reading this.</p>
-                        <p style="margin-bottom:0;">With sincerity,<br>Chaya</p>
-                    </div>
-                    <div class="vertical-divider"></div>
-                    <div class="postcard-right">
-                        <div class="stamp-box"></div>
-                        <div class="address-line"></div>
-                        <div class="address-line"></div>
-                        <div class="address-line"></div>
-                        <div class="address-line" style="width: 60%;"></div>
-                    </div>
+            <div id="postcard">
+                <button class="postcard-close-x" onclick="returnToMainWithCountdown()">X</button>
+                <div class="postcard-left">
+                    <h2 style="color: #4a90e2; margin-top: 0;">Hello <span id="display-name"></span>,</h2>
+                    <p>Congratulations on getting the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
+                    <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. There are many attractive guys in college but you were the only that was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. Every time you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during English workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. But all my feelings aside, my goal is to literally just tell you how I feel about you. Sometimes I act a certain way, but I was mostly just confused with how to deal with my feelings towards you.</p>
+                    <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying it before moving on to my next chapter in life. I don't know a lot about you aside of your class, your name and who you hang out with. But I can tell you're a great guy with a really nice personality. Well, I'm also a quiet person so I think quietness on you is an attractive trait. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
+                    <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there was nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I don't mean to disrespect.</p>
+                    <p>Please have a good day or night, whenever you're reading this.</p>
+                    <p style="margin-bottom:0;">With sincerity,<br>Chaya</p>
                 </div>
+                <div class="vertical-divider"></div>
+                <div class="postcard-right"></div>
             </div>
         </div>
     </div>
@@ -299,30 +280,33 @@
         let popupCallback = null;
         const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
 
-        // SFX Trigger for buttons
+        // Audio Triggers
         document.addEventListener('click', (e) => {
             if (e.target.tagName === 'BUTTON') {
                 const sfx = document.getElementById('click-sfx');
-                sfx.currentTime = 0;
-                sfx.play().catch(()=>{});
+                sfx.currentTime = 0; sfx.play().catch(()=>{});
+            }
+        });
+
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const sfx = document.getElementById('hover-sfx');
+                sfx.currentTime = 0; sfx.play().catch(()=>{});
             }
         });
 
         function startIntro() {
             setTimeout(() => {
-                const intro = document.getElementById('intro-screen');
-                const ui = document.getElementById('ui-layer');
-                intro.style.opacity = '0';
+                document.getElementById('intro-screen').style.opacity = '0';
                 showPage('name-page');
-                ui.classList.add('visible');
+                document.getElementById('ui-layer').classList.add('visible');
                 fadeAudioIn(document.getElementById('bg-audio'));
-                setTimeout(() => { intro.style.display = 'none'; }, 1500); 
+                setTimeout(() => { document.getElementById('intro-screen').style.display = 'none'; }, 1500); 
             }, 3000); 
         }
 
         function fadeAudioIn(audio) {
-            audio.volume = 0;
-            audio.play().catch(() => {
+            audio.volume = 0; audio.play().catch(() => {
                 document.addEventListener('click', () => audio.play(), { once: true });
             });
             let vol = 0;
@@ -349,13 +333,8 @@
             document.getElementById('p-msg').innerText = msg;
             popupCallback = callback;
             const btns = document.getElementById('popup-btns');
-            if (type === 'ok') {
-                btns.innerHTML = `<button onclick="closePopup('ok')">Okay</button>`;
-            } else if (type === 'none') {
-                btns.innerHTML = "";
-            } else {
-                btns.innerHTML = `<button onclick="closePopup('yes')">YES</button><button onclick="closePopup('no')">NO</button>`;
-            }
+            btns.innerHTML = type === 'ok' ? `<button onclick="closePopup('ok')">Okay</button>` : 
+                             type === 'none' ? "" : `<button onclick="closePopup('yes')">YES</button><button onclick="closePopup('no')">NO</button>`;
             document.getElementById('cute-popup').classList.remove('hidden');
             document.getElementById('ui-layer').classList.add('dimmed');
             setTimeout(() => { document.getElementById('cute-popup').classList.add('active'); }, 10);
@@ -364,25 +343,18 @@
         function closePopup(choice) {
             document.getElementById('cute-popup').classList.remove('active');
             document.getElementById('ui-layer').classList.remove('dimmed');
-            setTimeout(() => { 
-                document.getElementById('cute-popup').classList.add('hidden'); 
-                if (popupCallback) popupCallback(choice); 
-            }, 200);
+            setTimeout(() => { document.getElementById('cute-popup').classList.add('hidden'); if (popupCallback) popupCallback(choice); }, 200);
         }
 
         function showPage(id) {
             const ids = ['name-page', 'main-page', 'rel-check', 'math-game', 'postcard-container'];
             ids.forEach(pg => { document.getElementById(pg).classList.add('hidden'); });
             document.getElementById(id).classList.remove('hidden');
-            
             if (id === 'name-page') focusInput('userNameInput');
             if (id === 'main-page') focusInput('passInput');
             if (id === 'math-game') focusInput('math-answer');
-            
             if (id === 'postcard-container') {
-                fadeAudioOut(document.getElementById('bg-audio'), () => {
-                    fadeAudioIn(document.getElementById('confession-audio'));
-                });
+                fadeAudioOut(document.getElementById('bg-audio'), () => fadeAudioIn(document.getElementById('confession-audio')));
             }
         }
 
@@ -399,13 +371,9 @@
 
         function startRelationshipCheck() { showPage('rel-check'); }
 
-        // 3 & 4 & 5. Corrected Terminate logic for "Noted" message
         function terminate() {
-            // Remove the previous relationship screen entirely
             document.getElementById('rel-check').classList.add('hidden');
-            
             openPopup("Noted!", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
-                // Set final centered message
                 document.getElementById('ui-layer').innerHTML = `
                     <div class="container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin:0;">
                         <button class="postcard-close-x" onclick="location.reload()">X</button>
@@ -436,8 +404,7 @@
         }
 
         function checkMath() {
-            const ans = parseInt(document.getElementById('math-answer').value);
-            if(ans === currentAnswer) {
+            if(parseInt(document.getElementById('math-answer').value) === currentAnswer) {
                 score++;
                 if(score === 3) {
                     let timer = 5;
