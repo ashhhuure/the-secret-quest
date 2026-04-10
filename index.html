@@ -13,14 +13,12 @@
         }
 
         html, body {
-            overflow-x: hidden;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: #ffffff transparent;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
         }
-
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-thumb { background: #ffffff; border-radius: 10px; }
 
         body {
             background-image: var(--sky-bg);
@@ -34,11 +32,9 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 10px;
-            box-sizing: border-box;
         }
 
+        /* Intro Screen Overlay */
         #intro-screen {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -52,19 +48,19 @@
             text-align: center;
             font-family: 'Inter', sans-serif;
             transition: opacity 1.5s ease; 
-            opacity: 1;
         }
 
         #intro-screen img { width: 80px; margin-bottom: 20px; }
-        #intro-screen p { font-size: 1.1rem; letter-spacing: 1px; font-weight: 300; }
+        #intro-screen p { font-size: 1rem; letter-spacing: 1px; font-weight: 300; }
 
+        /* Main UI Layer */
         #ui-layer {
             transition: filter 0.4s ease, opacity 1.5s ease;
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
-            min-height: 100vh;
+            height: 100%;
             position: relative;
             z-index: 5;
             opacity: 0; 
@@ -74,16 +70,15 @@
         .dimmed { filter: brightness(30%); pointer-events: none; }
         
         .container {
-            background: rgba(255, 255, 255, 0.9);
-            border: 6px solid var(--pixel-border);
-            box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.95);
+            border: 5px solid var(--pixel-border);
+            box-shadow: 8px 8px 0px rgba(0,0,0,0.1);
             padding: 30px 20px;
             text-align: center;
-            width: 95%;
+            width: 90%;
             max-width: 380px;
             position: relative;
             z-index: 10;
-            margin: 20px auto;
         }
 
         h1 { 
@@ -92,12 +87,8 @@
             margin-top: 0; 
             color: #4a90e2; 
             text-transform: uppercase;
-            white-space: nowrap; 
-            overflow: hidden;
-            text-overflow: ellipsis;
+            line-height: 1.1;
         }
-
-        @media (max-width: 400px) { h1 { font-size: 1.8rem; } }
 
         .score { position: absolute; top: 10px; right: 10px; font-size: 0.9rem; color: #d14d72; }
 
@@ -121,31 +112,29 @@
             font-size: 0.9rem;
             cursor: pointer;
             margin: 5px;
-            border-radius: 15px;
+            border-radius: 12px;
             transition: 0.1s;
         }
 
         button:hover {
             background: #e0f4ff;
             border-color: #4a90e2;
-            transform: scale(1.05);
         }
 
         .hidden { display: none !important; }
 
+        /* Popups */
         .popup-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             display: flex; justify-content: center; align-items: center;
             z-index: 9999;
-            padding: 10px;
-            box-sizing: border-box;
         }
 
         .popup-container {
-            background: rgba(255, 255, 255, 0.95);
-            border: 6px double var(--pixel-border);
-            width: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            border: 5px solid var(--pixel-border);
+            width: 90%;
             max-width: 350px;
             padding: 30px 20px; 
             text-align: center;
@@ -157,14 +146,13 @@
 
         .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
         
+        /* Postcard Styles */
         #postcard-wrapper {
             display: flex;
             justify-content: center;
             align-items: center;
-            width: 100%;
-            min-height: 100vh;
-            padding: 10px;
-            box-sizing: border-box;
+            width: 100vw;
+            height: 100vh;
         }
 
         #postcard {
@@ -172,26 +160,21 @@
             background-size: cover;
             background-position: center;
             padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             width: 750px; 
             height: 480px; 
-            display: flex !important;
-            flex-direction: row !important; /* Locked Horizontal */
+            display: flex;
+            flex-direction: row; 
             position: relative;
-            text-align: left;
             box-sizing: border-box;
         }
 
         @media (max-width: 768px) {
-            #postcard-wrapper { padding: 0; }
-            #postcard {
-                transform: scale(0.45); 
-                transform-origin: center center;
-            }
+            #postcard { transform: scale(0.48); transform-origin: center center; }
         }
 
-        @media (max-width: 380px) {
-            #postcard { transform: scale(0.38); }
+        @media (max-width: 480px) {
+            #postcard { transform: scale(0.4); }
         }
 
         .postcard-left { 
@@ -200,10 +183,10 @@
             font-family: 'Indie Flower', cursive; 
             overflow-y: auto; 
             height: 100%;
+            text-align: left;
         }
-        .postcard-left h2 { font-size: 1.5rem; margin-top: 0; }
-        .postcard-left p { font-size: 1rem; line-height: 1.4; }
-        .vertical-divider { width: 2px; background-color: rgba(255,255,255,0.5); margin: 0 15px; height: 100%; }
+
+        .vertical-divider { width: 2px; background-color: rgba(255,255,255,0.4); margin: 0 15px; height: 100%; }
         
         .postcard-right { 
             flex: 0.7; 
@@ -211,8 +194,8 @@
             flex-direction: column; 
             align-items: flex-end; 
             position: relative; 
-            height: 100%;
         }
+
         .stamp-box { width: 60px; height: 70px; border: 2px dashed rgba(0,0,0,0.2); margin-bottom: 40px; }
         .address-line { width: 100%; height: 2px; background: rgba(0,0,0,0.1); margin-bottom: 25px; }
 
@@ -223,14 +206,15 @@
             width: 32px;
             height: 32px;
             background-color: white;
-            border: 2px solid #000;
+            border: 3px solid #000;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: var(--pixel-font);
-            font-size: 1.6rem;
+            font-size: 1.5rem;
             cursor: pointer;
             z-index: 110;
+            border-radius: 0; /* Square box */
         }
     </style>
 </head>
@@ -247,15 +231,15 @@
 
     <div id="cute-popup" class="popup-overlay hidden">
         <div class="popup-container">
-            <h2 id="p-title" style="color:#d14d72; margin-top: 25px;">Notification</h2>
-            <p id="p-msg" style="margin-bottom:20px; white-space: pre-wrap;"></p>
+            <h2 id="p-title" style="color:#d14d72; margin-top: 15px; font-family: var(--pixel-font);">Notification</h2>
+            <p id="p-msg" style="margin-bottom:20px; white-space: pre-wrap; font-size: 0.95rem;"></p>
             <div id="popup-btns"></div>
         </div>
     </div>
 
     <div id="ui-layer">
         <div id="name-page" class="container hidden">
-            <h1>Welcome to Bluebell Mailbox</h1>
+            <h1>Welcome to<br>Bluebell Mailbox</h1>
             <p>Please enter your name:</p>
             <input type="text" id="userNameInput" placeholder="Your Name" onkeydown="if(event.key==='Enter') saveName()">
             <p style="font-size: 0.75rem; color: #666; font-style: italic;">(Short name for signature)</p>
@@ -263,8 +247,7 @@
         </div>
 
         <div id="main-page" class="container hidden">
-            <h1>Welcome to Bluebell Mailbox</h1>
-            <input type="text" id="passInput" placeholder="ENTER PASSWORD" onkeydown="if(event.key==='Enter') checkPassword()">
+            <input type="text" id="passInput" placeholder="ENTER PASSWORD" onkeydown="if(event.key==='Enter') checkPassword()" style="margin-top:20px;">
             <button onclick="checkPassword()">ENTER</button>
             <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">Need a hint?</p>
             <button onclick="startRelationshipCheck()">GET PASSWORD</button>
@@ -288,7 +271,7 @@
                 <div id="postcard">
                     <button class="postcard-close-x" onclick="returnToMainWithCountdown()">X</button>
                     <div class="postcard-left">
-                        <h2 style="color: #4a90e2;">Hello <span id="display-name"></span>,</h2>
+                        <h2 style="color: #4a90e2; margin-top:0;">Hello <span id="display-name"></span>,</h2>
                         <p>Congratulations on getting the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
                         <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. There are many attractive guys in college but you were the only that was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. Every time you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during English workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. But all my feelings aside, my goal is to literally just tell you how I feel about you. Sometimes I act a certain way, but I was mostly just confused with how to deal with my feelings towards you.</p>
                         <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying it before moving on to my next chapter in life. I don't know a lot about you aside of your class, your name and who you hang out with. But I can tell you're a great guy with a really nice personality. Well, I'm also a quiet person so I think quietness on you is an attractive trait. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
@@ -316,7 +299,7 @@
         let popupCallback = null;
         const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
 
-        // Strictly only buttons play click sound
+        // SFX Trigger for buttons
         document.addEventListener('click', (e) => {
             if (e.target.tagName === 'BUTTON') {
                 const sfx = document.getElementById('click-sfx');
@@ -353,11 +336,7 @@
             let vol = audio.volume;
             const interval = setInterval(() => {
                 if (vol > 0.05) { vol -= 0.05; audio.volume = vol; } 
-                else { 
-                    clearInterval(interval); 
-                    audio.pause(); 
-                    if(callback) callback(); 
-                }
+                else { clearInterval(interval); audio.pause(); if(callback) callback(); }
             }, 150);
         }
 
@@ -420,12 +399,17 @@
 
         function startRelationshipCheck() { showPage('rel-check'); }
 
+        // 3 & 4 & 5. Corrected Terminate logic for "Noted" message
         function terminate() {
+            // Remove the previous relationship screen entirely
+            document.getElementById('rel-check').classList.add('hidden');
+            
             openPopup("Noted!", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
+                // Set final centered message
                 document.getElementById('ui-layer').innerHTML = `
-                    <div class="container" style="z-index:100; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); margin:0;">
+                    <div class="container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin:0;">
                         <button class="postcard-close-x" onclick="location.reload()">X</button>
-                        <p>Have a wonderful day! :D</p>
+                        <p style="margin-top: 20px;">Have a wonderful day! :D</p>
                     </div>`;
             });
         }
