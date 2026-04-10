@@ -19,6 +19,7 @@
             scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
         }
 
+        /* 3. White translucent scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 10px; }
 
@@ -31,7 +32,7 @@
             font-family: "Courier New", Courier, monospace;
             font-weight: bold;
             display: flex;
-            justify-content: center;
+            justify-content: center; /* 2. Centered in desktop */
             align-items: center;
             min-height: 100vh;
             margin: 0;
@@ -59,7 +60,7 @@
             font-size: 1.1rem; 
             letter-spacing: 1px; 
             font-weight: 300; 
-            max-width: 250px; /* Forces two lines on mobile */
+            max-width: 250px; 
             line-height: 1.4;
         }
 
@@ -78,6 +79,7 @@
         #ui-layer.visible { opacity: 1; }
         .dimmed { filter: brightness(30%); pointer-events: none; }
         
+        /* 7. Box design stays */
         .container {
             background: rgba(255, 255, 255, 0.9);
             border: 6px solid var(--pixel-border);
@@ -90,13 +92,12 @@
             z-index: 10;
         }
 
-        /* Mobile specific container adjustment */
         @media (max-width: 480px) {
             .container { width: 80% !important; }
         }
 
         h1 { 
-            font-family: var(--pixel-font);
+            font-family: var(--pixel-font); /* 6. Fonts stay */
             font-size: 2.2rem; 
             margin-top: 0; 
             color: #4a90e2; 
@@ -130,6 +131,14 @@
             transition: 0.1s;
         }
 
+        /* NEW: Blue hover outline for Desktop Only */
+        @media (pointer: fine) {
+            button:hover, .postcard-close-x:hover {
+                outline: 3px solid #4a90e2;
+                outline-offset: 2px;
+            }
+        }
+
         .hidden { display: none !important; }
 
         .popup-overlay {
@@ -141,7 +150,7 @@
 
         .popup-container {
             background: rgba(255, 255, 255, 0.95);
-            border: 6px solid var(--pixel-border); /* Thick border applied */
+            border: 6px solid var(--pixel-border);
             width: 90%;
             max-width: 350px;
             padding: 30px 20px; 
@@ -154,8 +163,11 @@
 
         .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
         
+        /* 3D POSTCARD FLIP */
         #postcard-wrapper {
+            perspective: 1000px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             width: 100%;
@@ -163,21 +175,58 @@
         }
 
         #postcard {
-            background-image: url('postcard-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            padding: 25px;
-            width: 750px; 
-            height: 480px; 
-            display: flex !important;
-            flex-direction: row !important;
+            width: 750px;
+            height: 480px;
             position: relative;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+
+        #postcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+
+        /* 1. Portrait Mobile remains horizontal via scaling */
+        @media (max-width: 768px) {
+            #postcard { transform: scale(0.48); transform-origin: center center; }
+            #postcard.is-flipped { transform: scale(0.48) rotateY(180deg); }
+            .flip-hint { margin-top: -120px !important; }
+        }
+
+        .postcard-front, .postcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex !important;
             box-sizing: border-box;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        @media (max-width: 768px) {
-            #postcard { transform: scale(0.48); transform-origin: center center; }
+        .postcard-front {
+            background-image: url('postcard-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 25px;
+            flex-direction: row !important;
+        }
+
+        .postcard-back {
+            background-image: url('contact.jpg');
+            background-size: cover;
+            background-position: center;
+            transform: rotateY(180deg);
+        }
+
+        .flip-hint {
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 1);
+            margin-top: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            pointer-events: none;
         }
 
         .postcard-left { 
@@ -193,6 +242,7 @@
         
         .postcard-right { flex: 0.7; position: relative; }
 
+        /* 4. X button shape stays the same */
         .postcard-close-x {
             position: absolute;
             top: 15px;
@@ -223,6 +273,7 @@
     <audio id="bg-audio" preload="auto" loop><source src="background.mp3" type="audio/mpeg"></audio>
     <audio id="click-sfx"><source src="click.mp3" type="audio/mpeg"></audio>
     <audio id="hover-sfx"><source src="bloop.mp3" type="audio/mpeg"></audio>
+    <audio id="flip-sfx"><source src="flip.mp3" type="audio/mpeg"></audio>
 
     <div id="cute-popup" class="popup-overlay hidden">
         <div class="popup-container">
@@ -262,20 +313,24 @@
 
         <div id="postcard-container" class="hidden">
             <div id="postcard-wrapper">
-                <div id="postcard">
-                    <button class="postcard-close-x" onclick="returnToMainWithCountdown()">X</button>
-                    <div class="postcard-left">
-                        <h2 style="color: #4a90e2; margin-top: 0;">Hello <span id="display-name"></span>,</h2>
-                        <p>You got the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
-                        <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. It’s the first time in my life I’ve ever met someone who was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. When you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during muet speaking workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. I wish to hear your voice more. But all my feelings aside, my goal is literally to just tell you how I feel about you. Sometimes I act a certain way, but it’s simply because I’m too shy and embarrassed.</p>
-                        <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying anything before leaving college. I don't know a lot about you aside from your class, your name and who you hang out with. I can ask around but I’m too scared of people knowing my crush towards you. But I can tell you're a great guy with a nice personality. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
-                        <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there is nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I never mean to disrespect.</p>
-                        <p>Please have a good day or night, whenever you're reading this.</p>
-                        <p style="margin-bottom:0;">With sincerity,<br>Chaya</p>
+                <div id="postcard" onclick="handleCardClick(event)">
+                    <div class="postcard-front">
+                        <button class="postcard-close-x" onclick="event.stopPropagation(); returnToMainWithCountdown()">X</button>
+                        <div class="postcard-left">
+                            <h2 style="color: #4a90e2; margin-top: 0;">Hello <span id="display-name"></span>,</h2>
+                            <p>You got the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
+                            <p>I like you. I had to tell you now because we're likely never gonna meet each other ever again. The reason I first saw you was because you reminded me a lot of my idol. It’s the first time in my life I’ve ever met someone who was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. When you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during muet speaking workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. I wish to hear your voice more. But all my feelings aside, my goal is literally to just tell you how I feel about you. Sometimes I act a certain way, but it’s simply because I’m too shy and embarrassed.</p>
+                            <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying anything before leaving college. I don't know a lot about you aside from your class, your name and who you hang out with. I can ask around but I’m too scared of people knowing my crush towards you. But I can tell you're a great guy with a nice personality. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
+                            <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there is nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I never mean to disrespect.</p>
+                            <p>Please have a good day or night, whenever you're reading this.</p>
+                            <p style="margin-bottom:0;">With sincerity,<br>Chaya</p>
+                        </div>
+                        <div class="vertical-divider"></div>
+                        <div class="postcard-right"></div>
                     </div>
-                    <div class="vertical-divider"></div>
-                    <div class="postcard-right"></div>
+                    <div class="postcard-back"></div>
                 </div>
+                <div id="flip-prompt" class="flip-hint"></div>
             </div>
         </div>
     </div>
@@ -285,7 +340,13 @@
         let currentAnswer = 0;
         let userName = "";
         let popupCallback = null;
+        let touchstartX = 0;
+        let touchendX = 0;
         const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
+
+        const card = document.getElementById('postcard');
+        const flipSfx = document.getElementById('flip-sfx');
+        const promptText = document.getElementById('flip-prompt');
 
         document.addEventListener('click', (e) => {
             if (e.target.tagName === 'BUTTON') {
@@ -302,6 +363,7 @@
         });
 
         function startIntro() {
+            updatePrompt();
             setTimeout(() => {
                 document.getElementById('intro-screen').style.opacity = '0';
                 showPage('name-page');
@@ -309,6 +371,38 @@
                 fadeAudioIn(document.getElementById('bg-audio'));
                 setTimeout(() => { document.getElementById('intro-screen').style.display = 'none'; }, 1500); 
             }, 3000); 
+        }
+
+        function updatePrompt() {
+            if ('ontouchstart' in window || navigator.maxTouchPoints > 0) {
+                promptText.innerText = "Swipe left to inspect the postcard";
+            } else {
+                promptText.innerText = "Click bottom right to inspect the postcard";
+            }
+        }
+
+        function toggleFlip() {
+            card.classList.toggle('is-flipped');
+            flipSfx.currentTime = 0;
+            flipSfx.play().catch(()=>{});
+        }
+
+        function handleCardClick(e) {
+            if (!('ontouchstart' in window || navigator.maxTouchPoints > 0)) {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                if (x > rect.width * 0.7 && y > rect.height * 0.7) {
+                    toggleFlip();
+                }
+            }
+        }
+
+        card.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
+        card.addEventListener('touchend', e => { touchendX = e.changedTouches[0].screenX; handleSwipe(); }, {passive: true});
+
+        function handleSwipe() {
+            if (Math.abs(touchstartX - touchendX) > 50) { toggleFlip(); }
         }
 
         function fadeAudioIn(audio) {
@@ -380,11 +474,7 @@
         function terminate() {
             document.getElementById('rel-check').classList.add('hidden');
             openPopup("", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
-                document.getElementById('ui-layer').innerHTML = `
-                    <div class="container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin:0;">
-                        <button class="postcard-close-x" onclick="location.reload()">X</button>
-                        <p style="margin-top: 20px;">Have a wonderful day! :D</p>
-                    </div>`;
+                document.getElementById('ui-layer').innerHTML = `<div class="container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin:0;"><button class="postcard-close-x" onclick="location.reload()">X</button><p style="margin-top: 20px;">Have a wonderful day! :D</p></div>`;
             });
         }
 
