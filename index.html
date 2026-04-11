@@ -253,6 +253,7 @@
         .breathe-animation {
             opacity: 1 !important; /* Forces the hint to show up */
             animation: breathe 3s ease-in-out infinite;
+            display: block !important;
         }
 
         @keyframes breathe {
@@ -499,7 +500,6 @@
                 
                 clearTimeout(promptTimer);
                 promptText.classList.remove('breathe-animation');
-                promptText.style.opacity = "0";
 
                 promptTimer = setTimeout(() => {
                     promptText.classList.add('breathe-animation');
