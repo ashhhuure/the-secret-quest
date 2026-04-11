@@ -247,16 +247,18 @@
             text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
             pointer-events: none;
             opacity: 0; /* Start hidden for delay */
+            transition: opacity 0.5s ease;
         }
 
         .breathe-animation {
+            opacity: 1 !important; /* Forces the hint to show up */
             animation: breathe 3s ease-in-out infinite;
         }
 
         @keyframes breathe {
-            0% { opacity: 0.2; }
+            0% { opacity: 0.3; }
             50% { opacity: 1; }
-            100% { opacity: 0.2; }
+            100% { opacity: 0.3; }
         }
 
         .postcard-left { 
@@ -407,6 +409,10 @@
             card.classList.toggle('is-flipped');
             flipSfx.currentTime = 0;
             flipSfx.play().catch(()=>{});
+
+            // Immediately hide the hint once the user interacts
+            promptText.classList.remove('breathe-animation');
+            promptText.style.opacity = "0";
         }
 
         // UNIFIED TRIGGER FOR BOTH MOBILE AND DESKTOP
