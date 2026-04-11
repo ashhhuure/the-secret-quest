@@ -12,7 +12,8 @@
             --pixel-font: 'VT323', monospace;
         }
 
-        html, body {
+        html, 
+        body {
             overflow-x: hidden;
             overflow-y: auto;
             scrollbar-width: thin;
@@ -20,12 +21,17 @@
             height: 100%;
             margin: 0;
             padding: 0;
-            /* REMOVES THE BLUE HIGHLIGHT ON TAPS */
             -webkit-tap-highlight-color: transparent;
         }
 
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 10px; }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+        }
 
         body {
             background-image: var(--sky-bg);
@@ -41,6 +47,24 @@
             min-height: 100vh;
         }
 
+        /* INTRO AND FADE SYSTEM STYLES */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #323232;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
+            transition: opacity 1.5s ease;
+            opacity: 1;
+        }
+
         #ui-layer {
             transition: opacity 1.5s ease;
             display: flex;
@@ -49,48 +73,88 @@
             width: 100%;
             min-height: 100vh;
             opacity: 0; 
+            pointer-events: none;
         }
 
-        #ui-layer.visible { opacity: 1; }
+        #ui-layer.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
         
+        /* UI BOX STYLES */
         .container {
             background: rgba(255, 255, 255, 0.9);
             border: 6px solid var(--pixel-border);
             box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
-            padding: 30px 20px;
+            padding-top: 35px;
+            padding-bottom: 35px;
+            padding-left: 25px;
+            padding-right: 25px;
             text-align: center;
             width: 85%; 
             max-width: 380px;
             box-sizing: border-box;
         }
 
-        h1 { font-family: var(--pixel-font); font-size: 2.2rem; margin-top: 0; color: #4a90e2; text-transform: uppercase; }
+        h1 {
+            font-family: var(--pixel-font);
+            font-size: 2.5rem;
+            margin-top: 0px;
+            margin-bottom: 20px;
+            color: #4a90e2;
+            text-transform: uppercase;
+        }
 
         input[type="text"] {
             border: 4px solid var(--pixel-border);
-            padding: 10px;
+            padding: 12px;
             font-family: inherit;
             font-size: 1.1rem;
             width: 90%;
-            margin-bottom: 20px;
             text-align: center;
             outline: none;
             box-sizing: border-box;
+            background: white;
+        }
+
+        /* FIXED HINT POSITIONING */
+        .hint-text {
+            font-size: 0.85rem;
+            font-style: italic;
+            margin-top: 10px;
+            margin-bottom: 25px;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: normal;
+            display: block;
         }
 
         button {
             background: #fff;
             border: 4px solid var(--pixel-border);
-            padding: 10px 15px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+            padding-left: 20px;
+            padding-right: 20px;
             font-family: inherit;
-            font-size: 0.9rem;
+            font-size: 1rem;
             cursor: pointer;
-            margin: 5px;
+            margin-top: 5px;
+            margin-bottom: 5px;
+            margin-left: 5px;
+            margin-right: 5px;
             border-radius: 15px;
+            transition: transform 0.1s;
         }
 
-        .hidden { display: none !important; }
+        button:active {
+            transform: scale(0.95);
+        }
 
+        .hidden {
+            display: none !important;
+        }
+
+        /* POSTCARD SYSTEM STYLES */
         #postcard-container {
             width: 100%;
             height: 100vh;
@@ -107,7 +171,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 10px; 
+            gap: 15px; 
         }
 
         #postcard {
@@ -119,15 +183,26 @@
             cursor: pointer;
         }
 
-        #postcard.is-flipped { transform: rotateY(180deg); }
-
-        @media (max-width: 800px) {
-            #postcard { transform: scale(0.45); transform-origin: center; }
-            #postcard.is-flipped { transform: scale(0.45) rotateY(180deg); }
-            #postcard-wrapper { gap: 0px; margin-top: -20px; }
+        #postcard.is-flipped {
+            transform: rotateY(180deg);
         }
 
-        .postcard-front, .postcard-back {
+        @media (max-width: 800px) {
+            #postcard {
+                transform: scale(0.45);
+                transform-origin: center;
+            }
+            #postcard.is-flipped {
+                transform: scale(0.45) rotateY(180deg);
+            }
+            #postcard-wrapper {
+                gap: 0px;
+                margin-top: -20px;
+            }
+        }
+
+        .postcard-front, 
+        .postcard-back {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -136,8 +211,19 @@
             border-radius: 5px;
         }
 
-        .postcard-front { background-image: url('postcard-bg.jpg'); background-size: cover; padding: 35px; display: flex; }
-        .postcard-back { background-image: url('contact.jpg'); background-size: cover; transform: rotateY(180deg); }
+        .postcard-front {
+            background-image: url('postcard-bg.jpg');
+            background-size: cover;
+            padding: 35px;
+            display: flex;
+            box-sizing: border-box;
+        }
+
+        .postcard-back {
+            background-image: url('contact.jpg');
+            background-size: cover;
+            transform: rotateY(180deg);
+        }
 
         .flip-hint {
             font-family: 'Inter', sans-serif;
@@ -155,13 +241,38 @@
         }
 
         @keyframes breathe {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
+            0%, 100% { 
+                opacity: 0.3; 
+            }
+            50% { 
+                opacity: 1; 
+            }
         }
 
-        .postcard-left { flex: 1.3; padding-right: 15px; font-family: 'Indie Flower', cursive; overflow-y: auto; height: 100%; text-align: left; font-size: 1.1rem; line-height: 1.4; }
-        .vertical-divider { width: 2px; background-color: rgba(255,255,255,0.5); margin: 0 15px; height: 100%; }
-        .postcard-right { flex: 0.7; position: relative; }
+        .postcard-left {
+            flex: 1.3;
+            padding-right: 15px;
+            font-family: 'Indie Flower', cursive;
+            overflow-y: auto;
+            height: 100%;
+            text-align: left;
+            font-size: 1.2rem;
+            line-height: 1.4;
+            color: #333;
+        }
+
+        .vertical-divider {
+            width: 2px;
+            background-color: rgba(0,0,0,0.1);
+            margin-left: 15px;
+            margin-right: 15px;
+            height: 100%;
+        }
+
+        .postcard-right {
+            flex: 0.7;
+            position: relative;
+        }
 
         .postcard-close-x {
             position: absolute;
@@ -179,66 +290,71 @@
             cursor: pointer;
             z-index: 100;
         }
-
-        #intro-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: #323232;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            color: white;
-            transition: opacity 1.5s ease;
-        }
     </style>
 </head>
 <body onload="startIntro()">
 
     <div id="intro-screen">
         <img src="headphone.png" alt="Earphones" width="80">
-        <p style="font-family: 'Inter', sans-serif;">Use earphones for <br> immersive experience</p>
+        <p style="font-family: 'Inter', sans-serif; text-align: center;">
+            Use earphones for <br> immersive experience
+        </p>
     </div>
 
-    <audio id="confession-audio" loop><source src="music.mp3" type="audio/mpeg"></audio>
-    <audio id="bg-audio" loop><source src="background.mp3" type="audio/mpeg"></audio>
-    <audio id="click-sfx"><source src="click.mp3" type="audio/mpeg"></audio>
-    <audio id="flip-sfx"><source src="flip.mp3" type="audio/mpeg"></audio>
+    <audio id="confession-audio" loop>
+        <source src="music.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="bg-audio" loop>
+        <source src="background.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="click-sfx">
+        <source src="click.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="flip-sfx">
+        <source src="flip.mp3" type="audio/mpeg">
+    </audio>
 
     <div id="ui-layer">
+        
         <div id="name-page" class="container">
             <h1>Welcome to<br>Bluebell Mailbox</h1>
-            <p style="font-size: 0.8rem; font-style: italic;">(use short name for signature)</p>
             <input type="text" id="userNameInput" placeholder="Your Name" onkeydown="if(event.key==='Enter') saveName()">
+            <span class="hint-text">(use short name for signature)</span>
             <button onclick="saveName()">CONTINUE</button>
         </div>
 
         <div id="main-page" class="container hidden">
             <input type="text" id="passInput" placeholder="ENTER PASSWORD" onkeydown="if(event.key==='Enter') checkPassword()">
-            <button onclick="checkPassword()">ENTER</button>
-            <button onclick="showPage('rel-check')">GET PASSWORD</button>
+            <div style="margin-top: 20px;">
+                <button onclick="checkPassword()">ENTER</button>
+                <button onclick="showPage('rel-check')">GET PASSWORD</button>
+            </div>
         </div>
 
         <div id="rel-check" class="container hidden">
-            <p>Are you in a relationship?</p>
+            <p style="font-size: 1.2rem; margin-bottom: 20px;">Are you in a relationship?</p>
             <button onclick="location.reload()">YES</button>
             <button onclick="startMathGame()">NO</button>
         </div>
 
         <div id="math-game" class="container hidden">
-            <p id="math-question" style="font-size: 1.3rem;"></p>
+            <p id="math-question" style="font-size: 1.5rem; margin-bottom: 20px;"></p>
             <input type="text" id="math-answer" placeholder="Ans" onkeydown="if(event.key==='Enter') checkMath()">
-            <button onclick="checkMath()">SUBMIT</button>
+            <div style="margin-top: 20px;">
+                <button onclick="checkMath()">SUBMIT</button>
+            </div>
         </div>
 
         <div id="postcard-container" class="hidden">
             <div id="postcard-wrapper">
                 <div id="postcard" onclick="handleCardClick(event)">
+                    
                     <div class="postcard-front">
                         <div class="postcard-close-x" onclick="returnToMain(event)">X</div>
                         <div class="postcard-left">
-                            <h2 style="color: #4a90e2; margin-top: 0;">Hello <span id="display-name"></span>,</h2>
+                            <h2 style="color: #4a90e2; margin-top: 0; font-family: 'Indie Flower', cursive;">
+                                Hello <span id="display-name"></span>,
+                            </h2>
                             <p>You got the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
                             <p>I like you. I had to tell you now because we're likely never gonna see each other ever again. The reason I first saw you was because you reminded me a lot of my idol. It’s the first time in my life I’ve ever met someone who was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. When you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during muet speaking workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. I wish to hear your voice more. But all my feelings aside, my goal is literally to just tell you how I feel about you. Sometimes I act a certain way, but it’s simply because I’m too shy and embarrassed.</p>
                             <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying anything before leaving college. I don't know a lot about you aside from your class, your name and who you hang out with. I can ask around but I’m too scared of people knowing my crush towards you. But I can tell you're a great guy with a nice personality. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
@@ -247,107 +363,209 @@
                             <p style="margin-bottom:0;">With sincerity,<br>Chaya</p>
                         </div>
                         <div class="vertical-divider"></div>
-                        <div class="postcard-right"></div>
+                        <div class="postcard-right">
+                            </div>
                     </div>
+
                     <div class="postcard-back"></div>
+
                 </div>
-                <div id="flip-prompt" class="flip-hint">Click bottom right to inspect the postcard</div>
+
+                <div id="flip-prompt" class="flip-hint">
+                    Click bottom right to inspect the postcard
+                </div>
+
             </div>
         </div>
     </div>
 
     <script>
+        // GLOBAL STATE
         let score = 0;
         let currentAnswer = 0;
         let promptTimer = null;
-        const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
+        
+        const questions = [
+            { q: "15 + 24", a: 39 }, 
+            { q: "7 * 8", a: 56 }, 
+            { q: "100 / 4", a: 25 }
+        ];
 
+        // STARTUP TRANSITION
         function startIntro() {
-            setTimeout(() => {
-                document.getElementById('intro-screen').style.opacity = '0';
-                document.getElementById('ui-layer').classList.add('visible');
-                document.getElementById('bg-audio').play().catch(()=>{});
-                document.getElementById('userNameInput').focus();
-                setTimeout(() => document.getElementById('intro-screen').style.display = 'none', 1500);
+            setTimeout(function() {
+                const intro = document.getElementById('intro-screen');
+                const ui = document.getElementById('ui-layer');
+                const bgMusic = document.getElementById('bg-audio');
+
+                // Fade out intro
+                intro.style.opacity = '0';
+                
+                // Fade in content
+                ui.classList.add('visible');
+                
+                // Audio initiation
+                bgMusic.play().catch(function(err) {
+                    console.log("Audio waiting for user click.");
+                });
+
+                // Remove from display after fade
+                setTimeout(function() {
+                    intro.style.display = 'none';
+                    document.getElementById('userNameInput').focus();
+                }, 1500);
+
             }, 2000);
         }
 
+        // NAVIGATION ENGINE
         function showPage(id) {
-            document.querySelectorAll('.container, #postcard-container').forEach(el => el.classList.add('hidden'));
+            const containers = document.querySelectorAll('.container, #postcard-container');
+            
+            // Hide all active layers
+            for (let i = 0; i < containers.length; i++) {
+                containers[i].classList.add('hidden');
+            }
+
+            // Reveal the targeted page
             const target = document.getElementById(id);
             target.classList.remove('hidden');
-            const input = target.querySelector('input');
-            if(input) input.focus();
 
+            // Manage input focus automatically
+            const activeInput = target.querySelector('input');
+            if (activeInput) {
+                activeInput.focus();
+            }
+
+            // Cinematic audio swap for the postcard reveal
             if (id === 'postcard-container') {
                 document.getElementById('bg-audio').pause();
-                document.getElementById('confession-audio').play().catch(()=>{});
+                document.getElementById('confession-audio').play().catch(function() {});
+                
+                // Reset the breathing hint timer
                 clearTimeout(promptTimer);
                 document.getElementById('flip-prompt').classList.remove('breathe-animation');
-                promptTimer = setTimeout(() => {
+                
+                promptTimer = setTimeout(function() {
                     document.getElementById('flip-prompt').classList.add('breathe-animation');
                 }, 5000); 
             }
         }
 
+        // INTERACTION: POSTCARD FLIP
         function handleCardClick(e) {
-            if (e.target.classList.contains('postcard-close-x')) return; 
+            // Guard: don't flip if clicking the "X" button
+            if (e.target.classList.contains('postcard-close-x')) {
+                return; 
+            }
+
             const card = document.getElementById('postcard');
             const rect = card.getBoundingClientRect();
+            
+            // Map click to internal 750x480 coordinate space
             const x = (e.clientX - rect.left) / (rect.width / 750);
             const y = (e.clientY - rect.top) / (rect.height / 480);
+
+            // Trigger area: bottom right corner
             if (x > 500 && y > 330) {
                 card.classList.toggle('is-flipped');
-                document.getElementById('flip-sfx').play().catch(()=>{});
+                document.getElementById('flip-sfx').play().catch(function() {});
                 document.getElementById('flip-prompt').classList.remove('breathe-animation');
             }
         }
 
+        // LOGIC: NAME CAPTURE
         function saveName() {
-            document.getElementById('click-sfx').play().catch(()=>{});
-            const val = document.getElementById('userNameInput').value.trim();
-            if(val) { 
-                document.getElementById('display-name').innerText = val; 
-                showPage('main-page'); 
+            const nameInput = document.getElementById('userNameInput');
+            const val = nameInput.value.trim();
+
+            if (!val) {
+                alert("Please enter your name");
+                return;
             }
+
+            document.getElementById('click-sfx').play().catch(function() {});
+            document.getElementById('display-name').innerText = val; 
+            showPage('main-page'); 
         }
 
+        // LOGIC: PASSWORD GATE
         function checkPassword() {
-            document.getElementById('click-sfx').play().catch(()=>{});
-            if(document.getElementById('passInput').value.toLowerCase() === "light") {
+            const passInput = document.getElementById('passInput');
+            const pass = passInput.value.toLowerCase();
+
+            if (pass === "") {
+                alert("Please enter the password");
+                return;
+            }
+
+            if (pass === "light") {
+                document.getElementById('click-sfx').play().catch(function() {});
                 showPage('postcard-container');
+            } else {
+                alert("Incorrect password");
+                passInput.value = "";
+                passInput.focus();
             }
         }
 
+        // LOGIC: MATH GAME START
         function startMathGame() {
-            document.getElementById('click-sfx').play().catch(()=>{});
+            document.getElementById('click-sfx').play().catch(function() {});
             score = 0;
             showPage('math-game');
             updateMathQuestion();
         }
 
+        // LOGIC: MATH GAME CYCLE
         function updateMathQuestion() {
-            document.getElementById('math-question').innerText = questions[score].q + " = ?";
+            const questionElement = document.getElementById('math-question');
+            questionElement.innerText = questions[score].q + " = ?";
+            
             currentAnswer = questions[score].a;
+            
             const ansInput = document.getElementById('math-answer');
             ansInput.value = "";
             ansInput.focus();
         }
 
+        // LOGIC: MATH GAME VALIDATION
         function checkMath() {
-            document.getElementById('click-sfx').play().catch(()=>{});
-            if(parseInt(document.getElementById('math-answer').value) === currentAnswer) {
+            const inputField = document.getElementById('math-answer');
+            const userAnsInput = inputField.value;
+
+            if (userAnsInput === "") {
+                alert("Please enter an answer");
+                return;
+            }
+            
+            const userAns = parseInt(userAnsInput);
+            document.getElementById('click-sfx').play().catch(function() {});
+            
+            if (userAns === currentAnswer) {
                 score++;
-                if(score === 3) { alert("Password is: Light"); showPage('main-page'); } 
-                else { updateMathQuestion(); }
-            } else { startMathGame(); }
+                if (score === 3) { 
+                    alert("Password is: Light"); 
+                    showPage('main-page'); 
+                } else { 
+                    updateMathQuestion(); 
+                }
+            } else { 
+                alert("Wrong answer! Restarting...");
+                startMathGame(); 
+            }
         }
 
+        // EXIT POSTCARD
         function returnToMain(e) {
-            if(e) e.stopPropagation();
-            document.getElementById('click-sfx').play().catch(()=>{});
+            if (e) {
+                e.stopPropagation();
+            }
+            
+            document.getElementById('click-sfx').play().catch(function() {});
             document.getElementById('confession-audio').pause();
-            document.getElementById('bg-audio').play().catch(()=>{});
+            document.getElementById('bg-audio').play().catch(function() {});
+            
             showPage('main-page');
         }
     </script>
