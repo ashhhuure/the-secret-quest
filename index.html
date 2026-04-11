@@ -1,573 +1,565 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Bluebell Mailbox</title>
-    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Indie+Flower&family=Inter:wght@300&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --sky-bg: url('bg.gif'); 
-            --pixel-border: #000000;
-            --pixel-font: 'VT323', monospace;
-        }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Bluebell Mailbox</title>
+    <link href="https://fonts.googleapis.com/css2?family=VT323&family=Indie+Flower&family=Inter:wght@300&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --sky-bg: url('bg.gif'); 
+            --pixel-border: #000000;
+            --pixel-font: 'VT323', monospace;
+        }
 
-        html, 
-        body {
-            overflow-x: hidden;
-            overflow-y: auto;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-        }
+        html, body {
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+        }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
+        /* 3. White translucent scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 10px; }
 
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.5);
-            border-radius: 10px;
-        }
+        body {
+            background-image: var(--sky-bg);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            font-family: "Courier New", Courier, monospace;
+            font-weight: bold;
+            display: flex;
+            justify-content: center; /* 2. Centered in desktop */
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 10px;
+            box-sizing: border-box;
+        }
 
-        body {
-            background-image: var(--sky-bg);
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            background-repeat: no-repeat;
-            font-family: "Courier New", Courier, monospace;
-            font-weight: bold;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+        #intro-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(50, 50, 50, 1); 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            color: white;
+            text-align: center;
+            font-family: 'Inter', sans-serif;
+            transition: opacity 1.5s ease; 
+        }
 
-        /* INTRO AND FADE SYSTEM STYLES */
-        #intro-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #323232;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            color: white;
-            transition: opacity 1.5s ease;
-            opacity: 1;
-        }
+        #intro-screen img { width: 80px; margin-bottom: 20px; }
+        #intro-screen p { 
+            font-size: 1.1rem; 
+            letter-spacing: 1px; 
+            font-weight: 300; 
+            max-width: 250px; 
+            line-height: 1.4;
+        }
 
-        #ui-layer {
-            transition: opacity 1.5s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            min-height: 100vh;
-            opacity: 0; 
-            pointer-events: none;
-        }
+        #ui-layer {
+            transition: filter 0.4s ease, opacity 1.5s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            z-index: 5;
+            opacity: 0; 
+        }
 
-        #ui-layer.visible {
-            opacity: 1;
-            pointer-events: auto;
-        }
-        
-        /* UI BOX STYLES */
-        .container {
-            background: rgba(255, 255, 255, 0.9);
-            border: 6px solid var(--pixel-border);
-            box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
-            padding-top: 35px;
-            padding-bottom: 35px;
-            padding-left: 25px;
-            padding-right: 25px;
-            text-align: center;
-            width: 85%; 
-            max-width: 380px;
-            box-sizing: border-box;
-        }
+        #ui-layer.visible { opacity: 1; }
+        .dimmed { filter: brightness(30%); pointer-events: none; }
+        
+        /* 7. Box design stays */
+        .container {
+            background: rgba(255, 255, 255, 0.9);
+            border: 6px solid var(--pixel-border);
+            box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
+            padding: 30px 20px;
+            text-align: center;
+            width: 95%;
+            max-width: 380px;
+            position: relative;
+            z-index: 10;
+        }
 
-        h1 {
-            font-family: var(--pixel-font);
-            font-size: 2.5rem;
-            margin-top: 0px;
-            margin-bottom: 20px;
-            color: #4a90e2;
-            text-transform: uppercase;
-        }
+        @media (max-width: 480px) {
+            .container { width: 80% !important; }
+        }
 
-        input[type="text"] {
-            border: 4px solid var(--pixel-border);
-            padding: 12px;
-            font-family: inherit;
-            font-size: 1.1rem;
-            width: 90%;
-            text-align: center;
-            outline: none;
-            box-sizing: border-box;
-            background: white;
-        }
+        h1 { 
+            font-family: var(--pixel-font); /* 6. Fonts stay */
+            font-size: 2.2rem; 
+            margin-top: 0; 
+            color: #4a90e2; 
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
 
-        /* FIXED HINT POSITIONING */
-        .hint-text {
-            font-size: 0.85rem;
-            font-style: italic;
-            margin-top: 10px;
-            margin-bottom: 25px;
-            font-family: "Courier New", Courier, monospace;
-            font-weight: normal;
-            display: block;
-        }
+        .score { position: absolute; top: 10px; right: 10px; font-size: 0.9rem; color: #d14d72; }
 
-        button {
-            background: #fff;
-            border: 4px solid var(--pixel-border);
-            padding-top: 10px;
-            padding-bottom: 10px;
-            padding-left: 20px;
-            padding-right: 20px;
-            font-family: inherit;
-            font-size: 1rem;
-            cursor: pointer;
-            margin-top: 5px;
-            margin-bottom: 5px;
-            margin-left: 5px;
-            margin-right: 5px;
-            border-radius: 15px;
-            transition: transform 0.1s;
-        }
+        input[type="text"] {
+            border: 4px solid var(--pixel-border);
+            padding: 10px;
+            font-family: inherit;
+            font-size: 1.1rem;
+            width: 85%;
+            margin-bottom: 20px;
+            text-align: center;
+            outline: none;
+            box-sizing: border-box;
+        }
 
-        button:active {
-            transform: scale(0.95);
-        }
+        button {
+            background: #fff;
+            border: 4px solid var(--pixel-border);
+            padding: 10px 15px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            cursor: pointer;
+            margin: 5px;
+            border-radius: 15px;
+            transition: 0.1s;
+        }
 
-        .hidden {
-            display: none !important;
-        }
+        /* NEW: Blue hover outline for Desktop Only */
+        @media (pointer: fine) {
+            button:hover, .postcard-close-x:hover {
+                outline: 3px solid #4a90e2;
+                outline-offset: 2px;
+            }
+        }
 
-        /* POSTCARD SYSTEM STYLES */
-        #postcard-container {
-            width: 100%;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            position: relative;
-        }
+        .hidden { display: none !important; }
 
-        #postcard-wrapper {
-            perspective: 2000px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 15px; 
-        }
+        .popup-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999;
+        }
 
-        #postcard {
-            width: 750px;
-            height: 480px;
-            position: relative;
-            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-            transform-style: preserve-3d;
-            cursor: pointer;
-        }
+        .popup-container {
+            background: rgba(255, 255, 255, 0.95);
+            border: 6px solid var(--pixel-border);
+            width: 90%;
+            max-width: 350px;
+            padding: 30px 20px; 
+            text-align: center;
+            position: relative;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
 
-        #postcard.is-flipped {
-            transform: rotateY(180deg);
-        }
+        .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
+        
+        /* 1. Wrapper setup for absolute centering */
+        #postcard-wrapper {
+            perspective: 1000px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
 
-        @media (max-width: 800px) {
-            #postcard {
-                transform: scale(0.45);
-                transform-origin: center;
-            }
-            #postcard.is-flipped {
-                transform: scale(0.45) rotateY(180deg);
-            }
-            #postcard-wrapper {
-                gap: 0px;
-                margin-top: -20px;
-            }
-        }
+        /* 2. Absolute centering for the card */
+        #postcard {
+            width: 750px;
+            height: 480px;
+            position: absolute; 
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%); 
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            z-index: 20;
+        }
 
-        .postcard-front, 
-        .postcard-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border-radius: 5px;
-        }
+        /* 3. Flip logic that preserves the center position */
+        #postcard.is-flipped {
+            transform: translate(-50%, -50%) rotateY(180deg);
+        }
 
-        .postcard-front {
-            background-image: url('postcard-bg.jpg');
-            background-size: cover;
-            padding: 35px;
-            display: flex;
-            box-sizing: border-box;
-        }
+        /* 4. Mobile scaling and centering */
+        @media (max-width: 768px) {
+            #postcard { 
+                transform: translate(-50%, -50%) scale(0.46); 
+                transform-origin: center center; 
+            }
+            #postcard.is-flipped { 
+                transform: translate(-50%, -50%) scale(0.46) rotateY(180deg); 
+            }
+            .flip-hint { 
+                position: absolute;
+                bottom: 12%;
+                width: 100%;
+                text-align: center;
+                margin-top: 0 !important; 
+            }
+        }
 
-        .postcard-back {
-            background-image: url('contact.jpg');
-            background-size: cover;
-            transform: rotateY(180deg);
-        }
+        .postcard-front, .postcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex !important;
+            box-sizing: border-box;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
 
-        .flip-hint {
-            font-family: 'Inter', sans-serif;
-            font-size: 0.9rem;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
-            white-space: nowrap;
-            opacity: 0;
-            z-index: 1000;
-        }
+        .postcard-front {
+            background-image: url('postcard-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            padding: 25px;
+            flex-direction: row !important;
+        }
 
-        .breathe-animation {
-            animation: breathe 3s ease-in-out infinite;
-            opacity: 1 !important;
-        }
+        .postcard-back {
+            background-image: url('contact.jpg');
+            background-size: cover;
+            background-position: center;
+            transform: rotateY(180deg);
+        }
 
-        @keyframes breathe {
-            0%, 100% { 
-                opacity: 0.3; 
-            }
-            50% { 
-                opacity: 1; 
-            }
-        }
+        /* Slow Flicker/Breathe Logic */
+        .flip-hint {
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 1);
+            margin-top: 20px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            pointer-events: none;
+            opacity: 0; /* Start hidden for delay */
+        }
 
-        .postcard-left {
-            flex: 1.3;
-            padding-right: 15px;
-            font-family: 'Indie Flower', cursive;
-            overflow-y: auto;
-            height: 100%;
-            text-align: left;
-            font-size: 1.2rem;
-            line-height: 1.4;
-            color: #333;
-        }
+        .breathe-animation {
+            animation: breathe 3s ease-in-out infinite;
+        }
 
-        .vertical-divider {
-            width: 2px;
-            background-color: rgba(0,0,0,0.1);
-            margin-left: 15px;
-            margin-right: 15px;
-            height: 100%;
-        }
+        @keyframes breathe {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+        }
 
-        .postcard-right {
-            flex: 0.7;
-            position: relative;
-        }
+        .postcard-left { 
+            flex: 1.3; 
+            padding-right: 15px; 
+            font-family: 'Indie Flower', cursive; 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
+            height: 100%;
+            text-align: left;
+        }
 
-        .postcard-close-x {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 35px;
-            height: 35px;
-            background: white;
-            border: 3px solid #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: var(--pixel-font);
-            font-size: 1.5rem;
-            cursor: pointer;
-            z-index: 100;
-        }
-    </style>
+        .vertical-divider { width: 2px; background-color: rgba(255,255,255,0.5); margin: 0 15px; height: 100%; }
+        
+        .postcard-right { flex: 0.7; position: relative; }
+
+        /* 4. X button shape stays the same */
+        .postcard-close-x {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background-color: white;
+            border: 2px solid #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: var(--pixel-font);
+            font-size: 1.6rem;
+            cursor: pointer;
+            z-index: 110;
+            border-radius: 0;
+        }
+    </style>
 </head>
 <body onload="startIntro()">
 
-    <div id="intro-screen">
-        <img src="headphone.png" alt="Earphones" width="80">
-        <p style="font-family: 'Inter', sans-serif; text-align: center;">
-            Use earphones for <br> immersive experience
-        </p>
-    </div>
+    <div id="intro-screen">
+        <img src="headphone.png" alt="Earphones">
+        <p>Use earphones for <br> immersive experience</p>
+    </div>
 
-    <audio id="confession-audio" loop>
-        <source src="music.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="bg-audio" loop>
-        <source src="background.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="click-sfx">
-        <source src="click.mp3" type="audio/mpeg">
-    </audio>
-    <audio id="flip-sfx">
-        <source src="flip.mp3" type="audio/mpeg">
-    </audio>
+    <audio id="confession-audio" preload="auto" loop><source src="music.mp3" type="audio/mpeg"></audio>
+    <audio id="bg-audio" preload="auto" loop><source src="background.mp3" type="audio/mpeg"></audio>
+    <audio id="click-sfx"><source src="click.mp3" type="audio/mpeg"></audio>
+    <audio id="hover-sfx"><source src="bloop.mp3" type="audio/mpeg"></audio>
+    <audio id="flip-sfx"><source src="flip.mp3" type="audio/mpeg"></audio>
 
-    <div id="ui-layer">
-        
-        <div id="name-page" class="container">
-            <h1>Welcome to<br>Bluebell Mailbox</h1>
-            <input type="text" id="userNameInput" placeholder="Your Name" onkeydown="if(event.key==='Enter') saveName()">
-            <span class="hint-text">(use short name for signature)</span>
-            <button onclick="saveName()">CONTINUE</button>
-        </div>
+    <div id="cute-popup" class="popup-overlay hidden">
+        <div class="popup-container">
+            <h2 id="p-title" style="display:none;"></h2> <p id="p-msg" style="margin-top:10px; margin-bottom:20px; white-space: pre-wrap;"></p>
+            <div id="popup-btns"></div>
+        </div>
+    </div>
 
-        <div id="main-page" class="container hidden">
-            <input type="text" id="passInput" placeholder="ENTER PASSWORD" onkeydown="if(event.key==='Enter') checkPassword()">
-            <div style="margin-top: 20px;">
-                <button onclick="checkPassword()">ENTER</button>
-                <button onclick="showPage('rel-check')">GET PASSWORD</button>
-            </div>
-        </div>
+    <div id="ui-layer">
+        <div id="name-page" class="container hidden">
+            <h1>Welcome to<br>Bluebell Mailbox</h1>
+            <p>Please enter your name:</p>
+            <input type="text" id="userNameInput" placeholder="Your Name" onkeydown="if(event.key==='Enter') saveName()">
+            <p style="font-size: 0.75rem; color: #666; font-style: italic;">(Short name for signature)</p>
+            <button onclick="saveName()">CONTINUE</button>
+        </div>
 
-        <div id="rel-check" class="container hidden">
-            <p style="font-size: 1.2rem; margin-bottom: 20px;">Are you in a relationship?</p>
-            <button onclick="location.reload()">YES</button>
-            <button onclick="startMathGame()">NO</button>
-        </div>
+        <div id="main-page" class="container hidden">
+            <input type="text" id="passInput" placeholder="ENTER PASSWORD" onkeydown="if(event.key==='Enter') checkPassword()">
+            <button onclick="checkPassword()">ENTER</button>
+            <p style="font-size: 0.8rem; margin-top: 20px; color: #666;">Need a hint?</p>
+            <button onclick="startRelationshipCheck()">GET PASSWORD</button>
+        </div>
 
-        <div id="math-game" class="container hidden">
-            <p id="math-question" style="font-size: 1.5rem; margin-bottom: 20px;"></p>
-            <input type="text" id="math-answer" placeholder="Ans" onkeydown="if(event.key==='Enter') checkMath()">
-            <div style="margin-top: 20px;">
-                <button onclick="checkMath()">SUBMIT</button>
-            </div>
-        </div>
+        <div id="rel-check" class="container hidden">
+            <p>Are you currently in a relationship?</p>
+            <button onclick="terminate()">YES</button>
+            <button onclick="startMathGame()">NO</button>
+        </div>
 
-        <div id="postcard-container" class="hidden">
-            <div id="postcard-wrapper">
-                <div id="postcard" onclick="handleCardClick(event)">
-                    
-                    <div class="postcard-front">
-                        <div class="postcard-close-x" onclick="returnToMain(event)">X</div>
-                        <div class="postcard-left">
-                            <h2 style="color: #4a90e2; margin-top: 0; font-family: 'Indie Flower', cursive;">
-                                Hello <span id="display-name"></span>,
-                            </h2>
-                            <p>You got the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
-                            <p>I like you. I had to tell you now because we're likely never gonna see each other ever again. The reason I first saw you was because you reminded me a lot of my idol. It’s the first time in my life I’ve ever met someone who was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. When you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during muet speaking workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. I wish to hear your voice more. But all my feelings aside, my goal is literally to just tell you how I feel about you. Sometimes I act a certain way, but it’s simply because I’m too shy and embarrassed.</p>
-                            <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying anything before leaving college. I don't know a lot about you aside from your class, your name and who you hang out with. I can ask around but I’m too scared of people knowing my crush towards you. But I can tell you're a great guy with a nice personality. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
-                            <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there is nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I never mean to disrespect.</p>
-                            <p>Please have a good day or night, whenever you're reading this.</p>
-                            <p style="margin-bottom:0;">With sincerity,<br>Chaya</p>
-                        </div>
-                        <div class="vertical-divider"></div>
-                        <div class="postcard-right">
-                            </div>
-                    </div>
+        <div id="math-game" class="container hidden">
+            <div class="score">Score: <span id="scoreVal">0</span>/3</div>
+            <p id="math-question" style="font-size: 1.3rem;"></p>
+            <input type="text" id="math-answer" placeholder="Ans" onkeydown="if(event.key==='Enter') checkMath()">
+            <button onclick="checkMath()">SUBMIT</button>
+        </div>
 
-                    <div class="postcard-back"></div>
+        <div id="postcard-container" class="hidden">
+            <div id="postcard-wrapper">
+                <div id="postcard">
+                    <div class="postcard-front">
+                        <button class="postcard-close-x" onclick="event.stopPropagation(); returnToMainWithCountdown()">X</button>
+                        <div class="postcard-left">
+                            <h2 style="color: #4a90e2; margin-top: 0;">Hello <span id="display-name"></span>,</h2>
+                            <p>You got the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
+                            <p>I like you. I had to tell you now because we're likely never gonna see each other ever again. The reason I first saw you was because you reminded me a lot of my idol. It’s the first time in my life I’ve ever met someone who was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your hot guy appearance. When you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during muet speaking workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I felt cuteness aggression towards you. I wish to hear your voice more. But all my feelings aside, my goal is literally to just tell you how I feel about you. Sometimes I act a certain way, but it’s simply because I’m too shy and embarrassed.</p>
+                            <p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying anything before leaving college. I don't know a lot about you aside from your class, your name and who you hang out with. I can ask around but I’m too scared of people knowing my crush towards you. But I can tell you're a great guy with a nice personality. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
+                            <p>Just in case you picked 'Yes' earlier but still went through all the process to see what I wanted to say, please don't send your girlfriend after me. I do not know your relationship status because there is nobody I can ask without raising suspicions. I simply wanted to do this to not have regrets later in life, I never mean to disrespect.</p>
+                            <p>Please have a good day or night, whenever you're reading this.</p>
+                            <p style="margin-bottom:0;">With sincerity,<br>Chaya</p>
+                        </div>
+                        <div class="vertical-divider"></div>
+                        <div class="postcard-right"></div>
+                    </div>
+                    <div class="postcard-back"></div>
+                </div>
+                <div id="flip-prompt" class="flip-hint"></div>
+            </div>
+        </div>
+    </div>
 
-                </div>
+    <script>
+        let score = 0;
+        let currentAnswer = 0;
+        let userName = "";
+        let popupCallback = null;
+        let promptTimer = null; 
+        const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
 
-                <div id="flip-prompt" class="flip-hint">
-                    Click bottom right to inspect the postcard
-                </div>
+        const card = document.getElementById('postcard');
+        const flipSfx = document.getElementById('flip-sfx');
+        const promptText = document.getElementById('flip-prompt');
 
-            </div>
-        </div>
-    </div>
+        document.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                const sfx = document.getElementById('click-sfx');
+                sfx.currentTime = 0; sfx.play().catch(()=>{});
+            }
+        });
 
-    <script>
-        // GLOBAL STATE
-        let score = 0;
-        let currentAnswer = 0;
-        let promptTimer = null;
-        
-        const questions = [
-            { q: "15 + 24", a: 39 }, 
-            { q: "7 * 8", a: 56 }, 
-            { q: "100 / 4", a: 25 }
-        ];
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.tagName === 'BUTTON' && window.matchMedia('(pointer: fine)').matches) {
+                const sfx = document.getElementById('hover-sfx');
+                sfx.currentTime = 0; sfx.play().catch(()=>{});
+            }
+        });
 
-        // STARTUP TRANSITION
-        function startIntro() {
-            setTimeout(function() {
-                const intro = document.getElementById('intro-screen');
-                const ui = document.getElementById('ui-layer');
-                const bgMusic = document.getElementById('bg-audio');
+        function startIntro() {
+            promptText.innerText = "Click bottom right to inspect the postcard";
+            setTimeout(() => {
+                document.getElementById('intro-screen').style.opacity = '0';
+                showPage('name-page');
+                document.getElementById('ui-layer').classList.add('visible');
+                fadeAudioIn(document.getElementById('bg-audio'));
+                setTimeout(() => { document.getElementById('intro-screen').style.display = 'none'; }, 1500); 
+            }, 3000); 
+        }
 
-                // Fade out intro
-                intro.style.opacity = '0';
-                
-                // Fade in content
-                ui.classList.add('visible');
-                
-                // Audio initiation
-                bgMusic.play().catch(function(err) {
-                    console.log("Audio waiting for user click.");
-                });
+        function toggleFlip() {
+            card.classList.toggle('is-flipped');
+            flipSfx.currentTime = 0;
+            flipSfx.play().catch(()=>{});
+        }
 
-                // Remove from display after fade
-                setTimeout(function() {
-                    intro.style.display = 'none';
-                    document.getElementById('userNameInput').focus();
-                }, 1500);
+        // UNIFIED TRIGGER FOR BOTH MOBILE AND DESKTOP
+        function checkInteraction(x, y) {
+            const rect = card.getBoundingClientRect();
+            // We use clientX/Y relative to the postcard container
+            const relativeX = x - rect.left;
+            const relativeY = y - rect.top;
 
-            }, 2000);
-        }
+            // Trigger if in bottom right 30% of the card
+            if (relativeX > rect.width * 0.7 && relativeY > rect.height * 0.7) {
+                toggleFlip();
+            }
+        }
 
-        // NAVIGATION ENGINE
-        function showPage(id) {
-            const containers = document.querySelectorAll('.container, #postcard-container');
-            
-            // Hide all active layers
-            for (let i = 0; i < containers.length; i++) {
-                containers[i].classList.add('hidden');
-            }
+        card.addEventListener('click', (e) => {
+            checkInteraction(e.clientX, e.clientY);
+        });
 
-            // Reveal the targeted page
-            const target = document.getElementById(id);
-            target.classList.remove('hidden');
+        card.addEventListener('touchstart', (e) => {
+            const touch = e.touches[0];
+            const rect = card.getBoundingClientRect();
+            const relativeX = touch.clientX - rect.left;
+            const relativeY = touch.clientY - rect.top;
+            // Only block the browser if touching the bottom-right 30% (the flip zone)
+            if (relativeX > rect.width * 0.7 && relativeY > rect.height * 0.7) {
+                e.preventDefault(); 
+                checkInteraction(touch.clientX, touch.clientY);
+            }
+        }, {passive: false});
 
-            // Manage input focus automatically
-            const activeInput = target.querySelector('input');
-            if (activeInput) {
-                activeInput.focus();
-            }
 
-            // Cinematic audio swap for the postcard reveal
-            if (id === 'postcard-container') {
-                document.getElementById('bg-audio').pause();
-                document.getElementById('confession-audio').play().catch(function() {});
-                
-                // Reset the breathing hint timer
-                clearTimeout(promptTimer);
-                document.getElementById('flip-prompt').classList.remove('breathe-animation');
-                
-                promptTimer = setTimeout(function() {
-                    document.getElementById('flip-prompt').classList.add('breathe-animation');
-                }, 5000); 
-            }
-        }
+        function fadeAudioIn(audio) {
+            audio.volume = 0; audio.play().catch(() => {
+                document.addEventListener('click', () => audio.play(), { once: true });
+            });
+            let vol = 0;
+            const interval = setInterval(() => {
+                if (vol < 0.5) { vol += 0.05; audio.volume = vol; } 
+                else { clearInterval(interval); }
+            }, 150);
+        }
 
-        // INTERACTION: POSTCARD FLIP
-        function handleCardClick(e) {
-            // Guard: don't flip if clicking the "X" button
-            if (e.target.classList.contains('postcard-close-x')) {
-                return; 
-            }
+        function fadeAudioOut(audio, callback) {
+            let vol = audio.volume;
+            const interval = setInterval(() => {
+                if (vol > 0.05) { vol -= 0.05; audio.volume = vol; } 
+                else { clearInterval(interval); audio.pause(); if(callback) callback(); }
+            }, 150);
+        }
 
-            const card = document.getElementById('postcard');
-            const rect = card.getBoundingClientRect();
-            
-            // Map click to internal 750x480 coordinate space
-            const x = (e.clientX - rect.left) / (rect.width / 750);
-            const y = (e.clientY - rect.top) / (rect.height / 480);
+        function focusInput(id) {
+            setTimeout(() => { const el = document.getElementById(id); if (el) el.focus(); }, 100);
+        }
 
-            // Trigger area: bottom right corner
-            if (x > 500 && y > 330) {
-                card.classList.toggle('is-flipped');
-                document.getElementById('flip-sfx').play().catch(function() {});
-                document.getElementById('flip-prompt').classList.remove('breathe-animation');
-            }
-        }
+        function openPopup(title, msg, type, callback) {
+            document.getElementById('p-title').innerText = title;
+            document.getElementById('p-msg').innerText = msg;
+            popupCallback = callback;
+            const btns = document.getElementById('popup-btns');
+            btns.innerHTML = type === 'ok' ? `<button onclick="closePopup('ok')">Okay</button>` : 
+                             type === 'none' ? "" : `<button onclick="closePopup('yes')">YES</button><button onclick="closePopup('no')">NO</button>`;
+            document.getElementById('cute-popup').classList.remove('hidden');
+            document.getElementById('ui-layer').classList.add('dimmed');
+            setTimeout(() => { document.getElementById('cute-popup').classList.add('active'); }, 10);
+        }
 
-        // LOGIC: NAME CAPTURE
-        function saveName() {
-            const nameInput = document.getElementById('userNameInput');
-            const val = nameInput.value.trim();
+        function closePopup(choice) {
+            document.getElementById('cute-popup').classList.remove('active');
+            document.getElementById('ui-layer').classList.remove('dimmed');
+            setTimeout(() => { document.getElementById('cute-popup').classList.add('hidden'); if (popupCallback) popupCallback(choice); }, 200);
+        }
 
-            if (!val) {
-                alert("Please enter your name");
-                return;
-            }
+        function showPage(id) {
+            const ids = ['name-page', 'main-page', 'rel-check', 'math-game', 'postcard-container'];
+            ids.forEach(pg => { document.getElementById(pg).classList.add('hidden'); });
+            document.getElementById(id).classList.remove('hidden');
+            
+            if (id === 'name-page') focusInput('userNameInput');
+            if (id === 'main-page') focusInput('passInput');
+            if (id === 'math-game') focusInput('math-answer');
+            if (id === 'postcard-container') {
+                fadeAudioOut(document.getElementById('bg-audio'), () => fadeAudioIn(document.getElementById('confession-audio')));
+                
+                clearTimeout(promptTimer);
+                promptText.classList.remove('breathe-animation');
+                promptText.style.opacity = "0";
 
-            document.getElementById('click-sfx').play().catch(function() {});
-            document.getElementById('display-name').innerText = val; 
-            showPage('main-page'); 
-        }
+                promptTimer = setTimeout(() => {
+                    promptText.classList.add('breathe-animation');
+                }, 30000); 
+            }
+        }
 
-        // LOGIC: PASSWORD GATE
-        function checkPassword() {
-            const passInput = document.getElementById('passInput');
-            const pass = passInput.value.toLowerCase();
+        function saveName() {
+            const val = document.getElementById('userNameInput').value.trim();
+            if(val) { userName = val; document.getElementById('display-name').innerText = userName; showPage('main-page'); } 
+            else { openPopup("Wait!", "Please enter your name first! 🐱", "ok", () => focusInput('userNameInput')); }
+        }
 
-            if (pass === "") {
-                alert("Please enter the password");
-                return;
-            }
+        function checkPassword() {
+            if(document.getElementById('passInput').value.trim().toLowerCase() === "light") { showPage('postcard-container'); } 
+            else { openPopup("Incorrect!", "Wrong password... Hint: Use 'Get Password'!", "ok", () => focusInput('passInput')); }
+        }
 
-            if (pass === "light") {
-                document.getElementById('click-sfx').play().catch(function() {});
-                showPage('postcard-container');
-            } else {
-                alert("Incorrect password");
-                passInput.value = "";
-                passInput.focus();
-            }
-        }
+        function startRelationshipCheck() { showPage('rel-check'); }
 
-        // LOGIC: MATH GAME START
-        function startMathGame() {
-            document.getElementById('click-sfx').play().catch(function() {});
-            score = 0;
-            showPage('math-game');
-            updateMathQuestion();
-        }
+        function terminate() {
+            document.getElementById('rel-check').classList.add('hidden');
+            openPopup("", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
+                document.getElementById('ui-layer').innerHTML = `<div class="container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin:0;"><button class="postcard-close-x" onclick="location.reload()">X</button><p style="margin-top: 20px;">Have a wonderful day! :D</p></div>`;
+            });
+        }
 
-        // LOGIC: MATH GAME CYCLE
-        function updateMathQuestion() {
-            const questionElement = document.getElementById('math-question');
-            questionElement.innerText = questions[score].q + " = ?";
-            
-            currentAnswer = questions[score].a;
-            
-            const ansInput = document.getElementById('math-answer');
-            ansInput.value = "";
-            ansInput.focus();
-        }
+        function returnToMainWithCountdown() {
+            clearTimeout(promptTimer);
+            const sfx = document.getElementById('click-sfx');
+sfx.currentTime = 0; sfx.play().catch(()=>{});
+            fadeAudioOut(document.getElementById('confession-audio'), () => {
+                showPage('main-page');
+                fadeAudioIn(document.getElementById('bg-audio'));
+            });
+        }
 
-        // LOGIC: MATH GAME VALIDATION
-        function checkMath() {
-            const inputField = document.getElementById('math-answer');
-            const userAnsInput = inputField.value;
+        function startMathGame() {
+            openPopup("Game Start!", "In order to proceed, please answer these correctly!", "ok", () => {
+                score = 0; showPage('math-game'); updateMathQuestion();
+            });
+        }
 
-            if (userAnsInput === "") {
-                alert("Please enter an answer");
-                return;
-            }
-            
-            const userAns = parseInt(userAnsInput);
-            document.getElementById('click-sfx').play().catch(function() {});
-            
-            if (userAns === currentAnswer) {
-                score++;
-                if (score === 3) { 
-                    alert("Password is: Light"); 
-                    showPage('main-page'); 
-                } else { 
-                    updateMathQuestion(); 
-                }
-            } else { 
-                alert("Wrong answer! Restarting...");
-                startMathGame(); 
-            }
-        }
+        function updateMathQuestion() {
+            document.getElementById('scoreVal').innerText = score;
+            document.getElementById('math-question').innerText = questions[score].q + " = ?";
+            currentAnswer = questions[score].a;
+            document.getElementById('math-answer').value = "";
+            focusInput('math-answer');
+        }
 
-        // EXIT POSTCARD
-        function returnToMain(e) {
-            if (e) {
-                e.stopPropagation();
-            }
-            
-            document.getElementById('click-sfx').play().catch(function() {});
-            document.getElementById('confession-audio').pause();
-            document.getElementById('bg-audio').play().catch(function() {});
-            
-            showPage('main-page');
-        }
-    </script>
+        function checkMath() {
+            if(parseInt(document.getElementById('math-answer').value) === currentAnswer) {
+                score++;
+                if(score === 3) {
+                    let timer = 5;
+                    openPopup("Success!", "The password is: Light\n\nClosing in " + timer + "...", "none");
+                    const interval = setInterval(() => {
+                        timer--;
+                        document.getElementById('p-msg').innerText = "The password is: Light\n\nClosing in " + timer + "...";
+                        if(timer <= 0) { clearInterval(interval); closePopup(); showPage('main-page'); }
+                    }, 1000);
+                } else { updateMathQuestion(); }
+            } else { openPopup("Reset!", "Wrong! Starting over...", "ok", () => startMathGame()); }
+        }
+    </script>
 </body>
 </html>
+"
