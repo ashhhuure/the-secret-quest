@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Welcome to Bluebell Mailbox</title>
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Indie+Flower&family=Inter:wght@300&display=swap" rel="stylesheet">
     <style>
@@ -17,9 +17,11 @@
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+            height: 100%;
+            margin: 0;
+            padding: 0;
         }
 
-        /* 3. White translucent scrollbar */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.5); border-radius: 10px; }
 
@@ -32,12 +34,9 @@
             font-family: "Courier New", Courier, monospace;
             font-weight: bold;
             display: flex;
-            justify-content: center; /* 2. Centered in desktop */
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 10px;
-            box-sizing: border-box;
         }
 
         #intro-screen {
@@ -56,13 +55,7 @@
         }
 
         #intro-screen img { width: 80px; margin-bottom: 20px; }
-        #intro-screen p { 
-            font-size: 1.1rem; 
-            letter-spacing: 1px; 
-            font-weight: 300; 
-            max-width: 250px; 
-            line-height: 1.4;
-        }
+        #intro-screen p { font-size: 1.1rem; letter-spacing: 1px; font-weight: 300; max-width: 250px; line-height: 1.4; }
 
         #ui-layer {
             transition: filter 0.4s ease, opacity 1.5s ease;
@@ -79,32 +72,18 @@
         #ui-layer.visible { opacity: 1; }
         .dimmed { filter: brightness(30%); pointer-events: none; }
         
-        /* 7. Box design stays */
         .container {
             background: rgba(255, 255, 255, 0.9);
             border: 6px solid var(--pixel-border);
             box-shadow: 10px 10px 0px rgba(0,0,0,0.1);
             padding: 30px 20px;
             text-align: center;
-            width: 95%;
+            width: 90%;
             max-width: 380px;
-            position: relative;
             z-index: 10;
         }
 
-        @media (max-width: 480px) {
-            .container { width: 80% !important; }
-        }
-
-        h1 { 
-            font-family: var(--pixel-font); /* 6. Fonts stay */
-            font-size: 2.2rem; 
-            margin-top: 0; 
-            color: #4a90e2; 
-            text-transform: uppercase;
-            line-height: 1.1;
-        }
-
+        h1 { font-family: var(--pixel-font); font-size: 2.2rem; margin-top: 0; color: #4a90e2; text-transform: uppercase; line-height: 1.1; }
         .score { position: absolute; top: 10px; right: 10px; font-size: 0.9rem; color: #d14d72; }
 
         input[type="text"] {
@@ -131,7 +110,6 @@
             transition: 0.1s;
         }
 
-        /* NEW: Blue hover outline for Desktop Only */
         @media (pointer: fine) {
             button:hover, .postcard-close-x:hover {
                 outline: 3px solid #4a90e2;
@@ -162,53 +140,52 @@
         }
 
         .popup-overlay.active .popup-container { transform: scale(1); opacity: 1; }
-        
-        /* 1. Wrapper setup for absolute centering */
-        #postcard-wrapper {
-            perspective: 1000px;
+
+        /* POSTCARD SYSTEM */
+        #postcard-container {
+            width: 100%;
+            height: 100vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            width: 100%;
-            height: 100vh;
             position: relative;
         }
 
-        /* 2. Absolute centering for the card */
+        #postcard-wrapper {
+            perspective: 2000px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: auto;
+        }
+
         #postcard {
             width: 750px;
             height: 480px;
-            position: absolute; 
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%); 
+            position: relative;
             transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
             transform-style: preserve-3d;
             z-index: 20;
+            cursor: pointer;
         }
 
-        /* 3. Flip logic that preserves the center position */
-        #postcard.is-flipped {
-            transform: translate(-50%, -50%) rotateY(180deg);
-        }
+        #postcard.is-flipped { transform: rotateY(180deg); }
 
-        /* 4. Mobile scaling and centering */
-        @media (max-width: 768px) {
+        /* FIX: Scaling for Mobile Portrait & Landscape */
+        @media (max-width: 800px) or (max-height: 600px) {
             #postcard { 
-                transform: translate(-50%, -50%) scale(0.46); 
-                transform-origin: center center; 
+                transform: scale(0.45); 
+                margin: -120px 0; /* Prevents huge whitespace */
             }
-            #postcard.is-flipped { 
-                transform: translate(-50%, -50%) scale(0.46) rotateY(180deg); 
-            }
-            .flip-hint { 
-                position: absolute;
-                bottom: 12%;
-                width: 100%;
-                text-align: center;
-                margin-top: 0 !important; 
-            }
+            #postcard.is-flipped { transform: scale(0.45) rotateY(180deg); }
+        }
+
+        @media (max-width: 400px) {
+            #postcard { transform: scale(0.4); }
+            #postcard.is-flipped { transform: scale(0.4) rotateY(180deg); }
         }
 
         .postcard-front, .postcard-back {
@@ -220,46 +197,44 @@
             display: flex !important;
             box-sizing: border-box;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: 5px;
         }
 
         .postcard-front {
             background-image: url('postcard-bg.jpg');
             background-size: cover;
-            background-position: center;
-            padding: 25px;
+            padding: 35px;
             flex-direction: row !important;
         }
 
         .postcard-back {
             background-image: url('contact.jpg');
             background-size: cover;
-            background-position: center;
             transform: rotateY(180deg);
         }
 
-        /* Slow Flicker/Breathe Logic */
+        /* FIX: Prompt Message Overlap & Stacking */
         .flip-hint {
             font-family: 'Inter', sans-serif;
             font-style: italic;
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 1);
+            font-size: 0.9rem;
+            color: white;
             margin-top: 20px;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
-            pointer-events: none;
-            opacity: 0; /* Start hidden for delay */
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            white-space: nowrap; /* Forces one line */
+            opacity: 0;
             transition: opacity 0.5s ease;
+            z-index: 100;
         }
 
         .breathe-animation {
-            opacity: 1 !important; /* Forces the hint to show up */
+            opacity: 1 !important;
             animation: breathe 3s ease-in-out infinite;
-            display: block !important;
         }
 
         @keyframes breathe {
-            0% { opacity: 0.3; }
+            0%, 100% { opacity: 0.4; }
             50% { opacity: 1; }
-            100% { opacity: 0.3; }
         }
 
         .postcard-left { 
@@ -267,32 +242,35 @@
             padding-right: 15px; 
             font-family: 'Indie Flower', cursive; 
             overflow-y: auto; 
-            -webkit-overflow-scrolling: touch;
             height: 100%;
             text-align: left;
+            font-size: 1.1rem;
+            line-height: 1.4;
         }
 
         .vertical-divider { width: 2px; background-color: rgba(255,255,255,0.5); margin: 0 15px; height: 100%; }
-        
         .postcard-right { flex: 0.7; position: relative; }
 
-        /* 4. X button shape stays the same */
+        /* FIX: Exit Button accessibility */
         .postcard-close-x {
             position: absolute;
-            top: 15px;
-            right: 15px;
-            width: 32px;
-            height: 32px;
+            top: -50px; /* Moves it outside the scaled card area */
+            right: 0;
+            width: 40px;
+            height: 40px;
             background-color: white;
-            border: 2px solid #000;
+            border: 3px solid #000;
             display: flex;
             justify-content: center;
             align-items: center;
             font-family: var(--pixel-font);
-            font-size: 1.6rem;
+            font-size: 1.8rem;
             cursor: pointer;
-            z-index: 110;
-            border-radius: 0;
+            z-index: 200;
+        }
+
+        @media (max-width: 768px) {
+            .postcard-close-x { top: -80px; right: 20px; } /* Adjust for mobile */
         }
     </style>
 </head>
@@ -321,7 +299,6 @@
             <h1>Welcome to<br>Bluebell Mailbox</h1>
             <p>Please enter your name:</p>
             <input type="text" id="userNameInput" placeholder="Your Name" onkeydown="if(event.key==='Enter') saveName()">
-            <p style="font-size: 0.75rem; color: #666; font-style: italic;">(Short name for signature)</p>
             <button onclick="saveName()">CONTINUE</button>
         </div>
 
@@ -346,10 +323,10 @@
         </div>
 
         <div id="postcard-container" class="hidden">
+            <button class="postcard-close-x" onclick="returnToMainWithCountdown()">X</button>
             <div id="postcard-wrapper">
-                <div id="postcard">
+                <div id="postcard" onclick="handleCardClick(event)">
                     <div class="postcard-front">
-                        <button class="postcard-close-x" onclick="event.stopPropagation(); returnToMainWithCountdown()">X</button>
                         <div class="postcard-left">
                             <h2 style="color: #4a90e2; margin-top: 0;">Hello <span id="display-name"></span>,</h2>
                             <p>You got the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
@@ -364,7 +341,7 @@
                     </div>
                     <div class="postcard-back"></div>
                 </div>
-                <div id="flip-prompt" class="flip-hint"></div>
+                <div id="flip-prompt" class="flip-hint">Click bottom right to inspect the postcard</div>
             </div>
         </div>
     </div>
@@ -373,30 +350,17 @@
         let score = 0;
         let currentAnswer = 0;
         let userName = "";
-        let popupCallback = null;
         let promptTimer = null; 
         const questions = [{q:"15 + 24", a:39}, {q:"7 * 8", a:56}, {q:"100 / 4", a:25}];
 
         const card = document.getElementById('postcard');
         const flipSfx = document.getElementById('flip-sfx');
+        const clickSfx = document.getElementById('click-sfx');
         const promptText = document.getElementById('flip-prompt');
 
-        document.addEventListener('click', (e) => {
-            if (e.target.tagName === 'BUTTON') {
-                const sfx = document.getElementById('click-sfx');
-                sfx.currentTime = 0; sfx.play().catch(()=>{});
-            }
-        });
-
-        document.addEventListener('mouseover', (e) => {
-            if (e.target.tagName === 'BUTTON' && window.matchMedia('(pointer: fine)').matches) {
-                const sfx = document.getElementById('hover-sfx');
-                sfx.currentTime = 0; sfx.play().catch(()=>{});
-            }
-        });
+        function playClick() { clickSfx.currentTime = 0; clickSfx.play().catch(()=>{}); }
 
         function startIntro() {
-            promptText.innerText = "Click bottom right to inspect the postcard";
             setTimeout(() => {
                 document.getElementById('intro-screen').style.opacity = '0';
                 showPage('name-page');
@@ -406,45 +370,24 @@
             }, 3000); 
         }
 
-        function toggleFlip() {
-            card.classList.toggle('is-flipped');
-            flipSfx.currentTime = 0;
-            flipSfx.play().catch(()=>{});
-
-            // Immediately hide the hint once the user interacts
-            promptText.classList.remove('breathe-animation');
-            promptText.style.opacity = "0";
-        }
-
-        // UNIFIED TRIGGER FOR BOTH MOBILE AND DESKTOP
-        function checkInteraction(x, y) {
+        function handleCardClick(e) {
             const rect = card.getBoundingClientRect();
-            // We use clientX/Y relative to the postcard container
-            const relativeX = x - rect.left;
-            const relativeY = y - rect.top;
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
 
-            // Trigger if in bottom right 30% of the card
-            if (relativeX > rect.width * 0.7 && relativeY > rect.height * 0.7) {
+            // Normalize for scaling: check if click is in bottom-right 30%
+            if (x > rect.width * 0.65 && y > rect.height * 0.65) {
                 toggleFlip();
             }
         }
 
-        card.addEventListener('click', (e) => {
-            checkInteraction(e.clientX, e.clientY);
-        });
-
-        card.addEventListener('touchstart', (e) => {
-            const touch = e.touches[0];
-            const rect = card.getBoundingClientRect();
-            const relativeX = touch.clientX - rect.left;
-            const relativeY = touch.clientY - rect.top;
-            // Only block the browser if touching the bottom-right 30% (the flip zone)
-            if (relativeX > rect.width * 0.7 && relativeY > rect.height * 0.7) {
-                e.preventDefault(); 
-                checkInteraction(touch.clientX, touch.clientY);
-            }
-        }, {passive: false});
-
+        function toggleFlip() {
+            card.classList.toggle('is-flipped');
+            flipSfx.currentTime = 0;
+            flipSfx.play().catch(()=>{});
+            promptText.classList.remove('breathe-animation');
+            promptText.style.opacity = "0";
+        }
 
         function fadeAudioIn(audio) {
             audio.volume = 0; audio.play().catch(() => {
@@ -465,42 +408,16 @@
             }, 150);
         }
 
-        function focusInput(id) {
-            setTimeout(() => { const el = document.getElementById(id); if (el) el.focus(); }, 100);
-        }
-
-        function openPopup(title, msg, type, callback) {
-            document.getElementById('p-title').innerText = title;
-            document.getElementById('p-msg').innerText = msg;
-            popupCallback = callback;
-            const btns = document.getElementById('popup-btns');
-            btns.innerHTML = type === 'ok' ? `<button onclick="closePopup('ok')">Okay</button>` : 
-                             type === 'none' ? "" : `<button onclick="closePopup('yes')">YES</button><button onclick="closePopup('no')">NO</button>`;
-            document.getElementById('cute-popup').classList.remove('hidden');
-            document.getElementById('ui-layer').classList.add('dimmed');
-            setTimeout(() => { document.getElementById('cute-popup').classList.add('active'); }, 10);
-        }
-
-        function closePopup(choice) {
-            document.getElementById('cute-popup').classList.remove('active');
-            document.getElementById('ui-layer').classList.remove('dimmed');
-            setTimeout(() => { document.getElementById('cute-popup').classList.add('hidden'); if (popupCallback) popupCallback(choice); }, 200);
-        }
-
         function showPage(id) {
             const ids = ['name-page', 'main-page', 'rel-check', 'math-game', 'postcard-container'];
             ids.forEach(pg => { document.getElementById(pg).classList.add('hidden'); });
             document.getElementById(id).classList.remove('hidden');
             
-            if (id === 'name-page') focusInput('userNameInput');
-            if (id === 'main-page') focusInput('passInput');
-            if (id === 'math-game') focusInput('math-answer');
             if (id === 'postcard-container') {
                 fadeAudioOut(document.getElementById('bg-audio'), () => fadeAudioIn(document.getElementById('confession-audio')));
-                
                 clearTimeout(promptTimer);
                 promptText.classList.remove('breathe-animation');
-
+                promptText.removeAttribute('style');
                 promptTimer = setTimeout(() => {
                     promptText.classList.add('breathe-animation');
                 }, 30000); 
@@ -508,36 +425,36 @@
         }
 
         function saveName() {
+            playClick();
             const val = document.getElementById('userNameInput').value.trim();
             if(val) { userName = val; document.getElementById('display-name').innerText = userName; showPage('main-page'); } 
-            else { openPopup("Wait!", "Please enter your name first! 🐱", "ok", () => focusInput('userNameInput')); }
         }
 
         function checkPassword() {
+            playClick();
             if(document.getElementById('passInput').value.trim().toLowerCase() === "light") { showPage('postcard-container'); } 
-            else { openPopup("Incorrect!", "Wrong password... Hint: Use 'Get Password'!", "ok", () => focusInput('passInput')); }
         }
 
-        function startRelationshipCheck() { showPage('rel-check'); }
-
-        function terminate() {
-            document.getElementById('rel-check').classList.add('hidden');
-            openPopup("", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
-                document.getElementById('ui-layer').innerHTML = `<div class="container" style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); margin:0;"><button class="postcard-close-x" onclick="location.reload()">X</button><p style="margin-top: 20px;">Have a wonderful day! :D</p></div>`;
-            });
-        }
+        function startRelationshipCheck() { playClick(); showPage('rel-check'); }
 
         function returnToMainWithCountdown() {
+            playClick();
             clearTimeout(promptTimer);
-            const sfx = document.getElementById('click-sfx');
-sfx.currentTime = 0; sfx.play().catch(()=>{});
             fadeAudioOut(document.getElementById('confession-audio'), () => {
                 showPage('main-page');
                 fadeAudioIn(document.getElementById('bg-audio'));
             });
         }
 
+        function terminate() {
+            playClick();
+            openPopup("", "Ah, then I wish you a happy relationship. Thank you for interacting with me :D", "ok", () => {
+                location.reload();
+            });
+        }
+
         function startMathGame() {
+            playClick();
             openPopup("Game Start!", "In order to proceed, please answer these correctly!", "ok", () => {
                 score = 0; showPage('math-game'); updateMathQuestion();
             });
@@ -548,22 +465,39 @@ sfx.currentTime = 0; sfx.play().catch(()=>{});
             document.getElementById('math-question').innerText = questions[score].q + " = ?";
             currentAnswer = questions[score].a;
             document.getElementById('math-answer').value = "";
-            focusInput('math-answer');
         }
 
         function checkMath() {
+            playClick();
             if(parseInt(document.getElementById('math-answer').value) === currentAnswer) {
                 score++;
                 if(score === 3) {
-                    let timer = 5;
-                    openPopup("Success!", "The password is: Light\n\nClosing in " + timer + "...", "none");
-                    const interval = setInterval(() => {
-                        timer--;
-                        document.getElementById('p-msg').innerText = "The password is: Light\n\nClosing in " + timer + "...";
-                        if(timer <= 0) { clearInterval(interval); closePopup(); showPage('main-page'); }
-                    }, 1000);
+                    openPopup("Success!", "The password is: Light", "ok", () => showPage('main-page'));
                 } else { updateMathQuestion(); }
-            } else { openPopup("Reset!", "Wrong! Starting over...", "ok", () => startMathGame()); }
+            } else { startMathGame(); }
+        }
+
+        function openPopup(title, msg, type, callback) {
+            document.getElementById('p-msg').innerText = msg;
+            const btns = document.getElementById('popup-btns');
+            btns.innerHTML = `<button onclick="closePopup()">Okay</button>`;
+            document.getElementById('cute-popup').classList.remove('hidden');
+            document.getElementById('ui-layer').classList.add('dimmed');
+            setTimeout(() => { 
+                document.getElementById('cute-popup').classList.add('active'); 
+                popupCallback = callback;
+            }, 10);
+        }
+
+        let popupCallback = null;
+        function closePopup() {
+            playClick();
+            document.getElementById('cute-popup').classList.remove('active');
+            document.getElementById('ui-layer').classList.remove('dimmed');
+            setTimeout(() => { 
+                document.getElementById('cute-popup').classList.add('hidden'); 
+                if (popupCallback) popupCallback(); 
+            }, 200);
         }
     </script>
 </body>
