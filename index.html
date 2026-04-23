@@ -333,7 +333,7 @@
 <p>You got the password! I wanted to tell you something so I made this website for you because I'm too shy to say it in person.</p>
 <p>I like you. I had to tell you now because we're likely never gonna see each other ever again. The reason I first saw you was because you resembled my idol. It’s the first time in my life I’ve ever met someone who was exactly my type. But most importantly, my feelings for you developed when I realised how cute you are. Beyond your looks, I noticed many things that contradict your cool guy image. When you dozed off during lectures, you'd hold your bag to your stomach and hug it with your head down. One time during muet speaking workshop, I saw you playing with your plushie keychain and that scene is still engrained in my memory.</p>
 <p>Another was when I just exited the lecture hall and saw you passing by with a bright smile, probably to something what your friends said, I thought my heart leaped out of my chest. Your smile can quite literally summon the sun out. I also remember the first time I heard your voice and you're so soft-spoken it hurts me a little. I wish to hear your voice more. But all my feelings aside, my goal is literally to just tell you how I feel about you. Sometimes I act a certain way that makes you think "What's wrong with her?", but it’s simply because I get too shy and embarrassed.</p>
-<p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying anything before leaving college. I don't know a lot about you aside from your class, your name and who you hang out with. I can ask around but I’m too scared of people knowing my crush towards you. But I can tell you're a great guy with a nice personality. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
+<p>It would be a dream to actually be able to talk to you but I'm completely fine with it if you don't want to. You don't have to say anything in response to my confession, I simply didn't wanna regret not saying anything before leaving college. I don't know a lot about you aside from your class, your name and who you hang out with. I can ask around but I’m too scared of people knowing my feelings towards you. But I can tell you're a great guy with a nice personality. In summary, I wish you best of luck in whatever pathway you take next after college. I'd be happy for you if you achieve the things you want in life.</p>
 <p>Please have a good day or night, whenever you're reading this.</p>
 <p style="margin-bottom:0;">With sincerity,<br>Chaya</p>
                         </div>
@@ -382,7 +382,8 @@
                 fadeAudioIn(document.getElementById('bg-audio'));
                 promptTimer = setTimeout(() => {
                 promptText.classList.add('breathe-animation');
-                }, 60000);
+                promptText.style.opacity = "1"; // Ensure it becomes visible
+                }, 40000);
                 setTimeout(() => { document.getElementById('intro-screen').style.display = 'none'; }, 1500); 
             }, 3000); 
         }
