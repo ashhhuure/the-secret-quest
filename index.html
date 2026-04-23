@@ -233,11 +233,12 @@
 
         .breathe-animation {
             animation: breathe 3s ease-in-out infinite;
+            opacity: 1 !important;
         }
 
         @keyframes breathe {
             0% { opacity: 0.2; }
-            50% { opacity: 1; }
+            50% { opacity: 1 !important; }
             100% { opacity: 0.2; }
         }
 
@@ -382,7 +383,6 @@
                 fadeAudioIn(document.getElementById('bg-audio'));
                 promptTimer = setTimeout(() => {
                 promptText.classList.add('breathe-animation');
-                promptText.style.opacity = "1"; // Ensure it becomes visible
                 }, 40000);
                 setTimeout(() => { document.getElementById('intro-screen').style.display = 'none'; }, 1500); 
             }, 3000); 
